@@ -5,9 +5,10 @@ import styles from '../styles/Home.module.css'
 export default function Home() {
   return (
     <div>
-      <h1 className={styles.title}>WELCOME</h1>
-      <p className={styles.text}>ITEM 1</p>
-      <p className={styles.text}>ITEM 2</p>
+      <h2 className={styles.txt}>MY COLLECTIONS </h2>
+  
+      <p className={styles.text}>NO NFTs</p>
+     
    
     </div>
   )
