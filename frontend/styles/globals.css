@@ -29,6 +29,7 @@ nav a {
   margin-left: 5px;
   font-weight: bold;
   font-size: large;
+  padding-inline: 40px;
 }
 
 nav .logo {

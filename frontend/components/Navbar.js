@@ -8,7 +8,9 @@ const Navbar = () => {
       </div>
       <Link href="/"><a>Dashboard</a></Link>
       <Link href="/market"><a>Marketplace</a></Link>
-      <Link href="/user"><a>Mint</a></Link>
+      <button style={{backgroundColor:'red', color: 'whitesmoke', padding: 8}}>   
+          Connect
+        </button>
    
     </nav>
 );
