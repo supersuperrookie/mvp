@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const Navbar = () => {
   return (
-    <nav className='' style={{backgroundColor:'lightblue'}}>
+    <nav className='' style={{backgroundColor:''}}>
       <div className="logo">
         <h1>AMHO</h1>
       </div>
