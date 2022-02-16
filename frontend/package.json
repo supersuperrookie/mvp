@@ -8,10 +8,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@3id/connect": "^0.2.5",
     "ethers": "^5.5.4",
+    "lit-ceramic-sdk": "1.1.12",
     "next": "12.0.10",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "use-ceramic": "^1.0.0",
+    "web3": "^1.7.0",
+    "web3modal": "^1.9.5"
   },
   "devDependencies": {
     "add": "^2.0.6",
