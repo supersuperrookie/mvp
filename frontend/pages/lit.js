@@ -1,70 +1,93 @@
 import { useState } from "react";
 import { useCeramic } from "use-ceramic";
 import { Integration } from "lit-ceramic-sdk";
-const ACL = [
+const CONTRACT_ADDRESS = "0x20F7bCABE76351984CaE70ce46CcC7F65410C485";
+const BUYER_ADDRESS = "0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C"; //0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C
+const SELLER_ADDRESS = "0x3D191C3949F805D49bc384abEf62336F7b7DF8E9"; 
+const evmContractConditions = [
   {
-    contractAddress: "0x8fDc07B1886e35CAc8928f0aE91100B0e7beEbeA",
-    standardContractType: "",
-    chain: "ropsten",
-    method: "getBuyer",
-    parameters: [],
+    contractAddress: CONTRACT_ADDRESS,
+    functionName: "getBuyer",
+    functionParams: [],
+    functionAbi: {
+      inputs: [],
+      name: "getBuyer",
+      outputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    chain: "mumbai",
     returnValueTest: {
+      key: "",
       comparator: "=",
-      value: "0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C",
+      value: BUYER_ADDRESS,
     },
   },
-  { "operator": "or" },
+  {"operator": "or"},
   {
-    contractAddress: "0x8fDc07B1886e35CAc8928f0aE91100B0e7beEbeA",
-    standardContractType: "",
-    chain: "ropsten",
-    method: "getSeller",
-    parameters: [],
-    returnValueTest: {
-      comparator: "=",
-      value: "0xb82744C8365cE57f2d379b15974c60114b787190",
+    contractAddress: CONTRACT_ADDRESS,
+    functionName: "getSeller",
+    functionParams: [],
+    functionAbi: {
+      inputs: [],
+      name: "getSeller",
+      outputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
     },
-  },
+    chain: "mumbai",
+    returnValueTest: {
+      key: "",
+      comparator: "=",
+      value: SELLER_ADDRESS,
+    },
+  }
 ];
 
 const Lit = () => {
-  const litCeramicIntegration = new Integration("https://ceramic-clay.3boxlabs.com");
+  const litCeramicIntegration = new Integration(
+    "https://ceramic-clay.3boxlabs.com",
+    "mumbai"
+  );
   litCeramicIntegration.startLitClient(window);
-  const ceramic = useCeramic();
+  // const ceramic = useCeramic();
   const [did, setDid] = useState("");
+  const [streamId, setStreamId] = useState("");
   const [secret, setSecret] = useState("secret");
   const [decryptedSecret, setDecryptedSecret] = useState("");
   const [progress, setProgress] = useState(false);
-  const [streamId, setStreamId] = useState("");
-
-  const handleLogin = async () => {
-    setProgress(true);
-    try {
-      const authProvider = await ceramic.connect();
-      await ceramic.authenticate(authProvider);
-      setDid(ceramic.did.id);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setProgress(false);
-    }
-  };
 
   const encryptSecret = () => {
     const response = litCeramicIntegration
-      .encryptAndWrite('secret', ACL)
+      .encryptAndWrite("secret", evmContractConditions, 'evmContractConditions')
       .then((result) => {
-        setStreamId(result)
-        alert(`Result: ${result}`)
+        setStreamId(result);
+        alert(`Result: ${result}`);
       });
   };
 
+  const handleInput = (e) => {
+    e.preventDefault();
+    setStreamId(e.target.value);
+  }
   const decryptSecret = () => {
     const response = litCeramicIntegration
       .readAndDecrypt(streamId)
       .then((decryptedText) => {
-        setDecryptedSecret(decryptedText)
-        console.log(decryptedText)
+        setDecryptedSecret(decryptedText);
+        alert(decryptedText);
       });
   };
 
@@ -78,7 +101,10 @@ const Lit = () => {
     } else {
       return (
         <>
-          <button onClick={handleLogin}>Sign In</button>
+          {/* <button onClick={handleLogin}>Sign In</button> */}
+          <button onClick={encryptSecret}>Encrypt Secret</button>
+          <button onClick={decryptSecret}>Decrypt</button>
+          <input type="text" value={streamId} onChange={handleInput}/>
         </>
       );
     }
