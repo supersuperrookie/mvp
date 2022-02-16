@@ -29,7 +29,7 @@ const Navbar = () => {
       </div>
       <Link href="/"><a>Dashboard</a></Link>
       <Link href="/market"><a>Marketplace</a></Link>
-         <button onClick={login} style={{backgroundColor:"red", color:"whitesmoke", padding: 10}}>Connect</button>
+      <Link href="/"><a>Contact</a></Link>
    
     </nav>
 );
