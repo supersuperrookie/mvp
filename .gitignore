@@ -273,4 +273,6 @@ Temporary Items
 *.wat
 *.xhtml
 
+package-lock.json
+
 # End of https://www.toptal.com/developers/gitignore/api/solidity,web,node,osx,linux
