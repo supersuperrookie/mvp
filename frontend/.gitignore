@@ -32,6 +32,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+<<<<<<< HEAD
 
 node_modules
 .env
@@ -48,3 +49,6 @@ package-lock.json
 
  # vercel
  .vercel
+=======
+package-lock*
+>>>>>>> development

@@ -29,6 +29,8 @@ const Navbar = () => {
       </div>
       <Link href="/"><a>Dashboard</a></Link>
       <Link href="/market"><a>Marketplace</a></Link>
+      <Link href="/lit"><a>Testing</a></Link>
+      <Link href="/user"><a>Connect</a></Link>
          <button onClick={login} style={{backgroundColor:"red", color:"whitesmoke", padding: 10}}>Connect</button>
    
     </nav>
