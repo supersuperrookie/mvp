@@ -1,13 +1,14 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import User from '../components/User'
 import styles from '../styles/Home.module.css'
 import { useState } from 'react'
 import { ethers } from 'ethers'
-import user from './user'
 
 
-export default function Home() {
-  const [walletAddress, setWalletAddress] = useState(null);
+
+export default function Home({setWalletAddress, walletAddress}) {
+  //const [walletAddress, setWalletAddress] = useState();
 
   const login = async () => {
      if (typeof window.ethereum !== 'undefined') {
@@ -18,9 +19,15 @@ export default function Home() {
   
   return (
     <div>
-      <button onClick={login} style={{backgroundColor:"red", color:"whitesmoke", padding: 10 }}>Connect</button>
-      <p>Your wallet address {walletAddress}</p>
-      <user />
+    <center>
+      {!walletAddress ? <button onClick={login}  style={{backgroundColor: "red", padding: 20, color: "white"}} >Connect to METAMASK</button> :
+      <div>
+         <User /> 
+      <p>ITEMS OWNED</p>
+      </div>}
+      
+     
+      </center>
     </div>
   )
 }
