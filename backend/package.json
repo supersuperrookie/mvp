@@ -6,11 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
+    "@ceramicnetwork/3id-did-resolver": "^1.4.16",
+    "@ceramicnetwork/http-client": "^1.5.7",
+    "cookie-parser": "~1.4.6",
+    "debug": "~4.3.3",
+    "dids": "^2.4.3",
+    "express": "~4.17.3",
+    "http-errors": "~2.0.0",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "key-did-resolver": "^1.4.4",
+    "lit-ceramic-sdk": "^1.1.12",
+    "lit-js-sdk": "^1.1.121",
+    "morgan": "~1.10.0",
+    "path": "^0.12.7"
   }
 }
