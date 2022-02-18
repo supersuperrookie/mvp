@@ -1,6 +1,6 @@
 import Layout from '../components/Layout'
-import '../styles/globals.css'
 import { useState } from 'react'
+import "../styles/index.css"
 
 
 function MyApp({ Component, pageProps }) {

@@ -5,8 +5,8 @@ import { ethers } from 'ethers'
 const Navbar = ({walletAddress}) => {
   
   return (
-    <nav className='' style={{backgroundColor:''}}>
-      <div className="logo">
+    <nav className='flex flex-wrap items-center justify-between p-3 bg-teal-500'>
+      <div className="logo" className="inline-flex items-center p-2 mr-4 font-serif font-bold lg:text-xl">
         <h1>AMHO</h1>
       </div>
       <Link href="/"><a>COLLECTIONS</a></Link>

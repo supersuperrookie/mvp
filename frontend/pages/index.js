@@ -1,10 +1,7 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import User from '../components/User'
-import styles from '../styles/Home.module.css'
 import { useState } from 'react'
 import { ethers } from 'ethers'
-
 
 
 export default function Home({setWalletAddress, walletAddress}) {
@@ -19,15 +16,19 @@ export default function Home({setWalletAddress, walletAddress}) {
   
   return (
     <div>
+      <br></br>
+      <br></br>
     <center>
-      {!walletAddress ? <button onClick={login}  style={{backgroundColor: "red", padding: 20, color: "white"}} >Connect to METAMASK</button> :
+      {!walletAddress ? <button onClick={login} type="button" className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
+        Connect to METAMASK     
+        </button> :
       <div>
          <User /> 
       <p>ITEMS OWNED</p>
       </div>}
-      
-     
       </center>
+      <br></br>
+      <br></br>
     </div>
   )
 }
