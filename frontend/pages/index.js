@@ -16,19 +16,25 @@ export default function Home({setWalletAddress, walletAddress}) {
   
   return (
     <div>
+    <br></br>
+    <br></br>
+ <div class="p-6 shadow-lg rounded-lg bg-gray-100 text-gray-700">
+  <h2 class="font-semibold text-3xl mb-5">WELCOME</h2>
+
       <br></br>
       <br></br>
-    <center>
       {!walletAddress ? <button onClick={login} type="button" className="text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">
-        Connect to METAMASK     
-        </button> :
+                        Connect to METAMASK     
+                        </button> :
       <div>
          <User /> 
       <p>ITEMS OWNED</p>
       </div>}
-      </center>
-      <br></br>
-      <br></br>
+    </div>
+ 
+
+      <br></br>    
+      <br></br>     
     </div>
   )
 }

@@ -70,7 +70,7 @@ const Footer = () => {
 </div>
 </div>
 <div className="px-4 py-6 bg-gray-700 md:flex md:items-center md:justify-between">
-<span className="text-sm text-gray-300 sm:text-center">© 2022 <a href="https://flowbite.com">AMHO™</a>. All Rights Reserved.
+<span className="text-sm text-gray-300 sm:text-center">© 2022 <a href="/">AMHO™</a>. All Rights Reserved.
 </span>
 <div className="flex mt-4 space-x-6 sm:justify-center md:mt-0">
 <a href="#" className="text-gray-400 hover:text-white">
