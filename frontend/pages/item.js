@@ -12,7 +12,7 @@ const item = () => {
          GUCCI BAG
         </h1>
         <p className="m-3 font-bold text-1xl dark:text-white">DID</p>
-        <p className="m-3 font-bold text-1xl dark:text-white">Description: first leather bag created in EthdDenver 2022</p>
+        <p className="m-3 font-bold text-1xl dark:text-white">Description: first leather bag created in EthDenver 2022</p>
         <p className="m-3 font-bold text-1xl dark:text-white">Dimension: 9.5/4.5/7.5 inches</p>
         <p className="m-3 font-bold text-1xl dark:text-white">Material: Pebble Grain Leather</p>
         <button className='m-3 font-bold text-1xl class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"'>1400 Matic</button>
