@@ -41,7 +41,7 @@ const Market = () => {
           </div>
           <div className="flex items-center">
             <div className="text-lg font-light text-white">
-              $1099,00
+              1400 Matic
             </div>
             <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none" onClick={handleClick}>
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
@@ -69,7 +69,7 @@ const Market = () => {
           </div>
           <div className="flex items-center">
             <div className="text-lg font-light text-white">
-              $1099,00
+              1600 Matic
             </div>
             <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
@@ -98,7 +98,7 @@ const Market = () => {
           </div>
           <div className="flex items-center">
             <div className="text-lg font-light text-white">
-              $8000
+              2000 Matic
             </div>
             <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
@@ -126,7 +126,7 @@ const Market = () => {
           </div>
           <div className="flex items-center">
             <div className="text-lg font-light text-white">
-              $2999,00
+              1700 Matic
             </div>
             <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
