@@ -8,10 +8,12 @@ function MyApp({ Component, pageProps }) {
   const [walletAddress, setWalletAddress] = useState();
 
   return (
-    <Layout walletAddress = {walletAddress}>
-      <Component walletAddress = {walletAddress} setWalletAddress={setWalletAddress}{...pageProps} />
-    </Layout>
-  )
+    // <CeramicProvider network={Networks.TESTNET_CLAY} connect={connect}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    // </CeramicProvider>
+  );
 }
 
-export default MyApp
+export default MyApp;
