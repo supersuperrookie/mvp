@@ -1,3 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a {
+    color: #333;
+    text-decoration: none;
+}
+
+
+body {
+    background: #fafcfd;
+    color: rgb(0, 0, 0);
+    font-family: "Arial";
+}
+
+nav {
+    margin: 0px auto 50px;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    border-bottom: 1px solid rgb(41, 12, 209);
+}
+
+nav a {
+    margin-left: 5px;
+    font-weight: bold;
+    font-size: large;
+    padding-inline: 40px;
+}
+
+nav .logo {
+    margin-right: auto;
+}
+
+
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+
+footer {
+    display: block;
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 60px;
+    color: rgb(12, 87, 156);
+    border-top: 1px solid #eaeaea;
+
+}

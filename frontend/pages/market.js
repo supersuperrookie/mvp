@@ -1,7 +1,18 @@
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from 'next/router'
 
 const Market = () => {
-    return ( 
+   
+  const router = useRouter()
+
+
+  const handleClick = e => {
+    e.preventDefault()
+    router.push('/item')
+  }
+  
+  return ( 
         <div className="">
    
 <div className="flex items-center w-screen min-h-screen bg-indigo-100">
@@ -21,7 +32,7 @@ const Market = () => {
         <figure className="mb-2">
           <img src="/bag.jpeg" alt="/" className="ml-auto mr-auto h-50" />
         </figure>
-        <div className="flex flex-col p-4 bg-purple-700 rounded-lg">
+        <div className="flex flex-col p-4 bg-blue-700 rounded-lg">
           <div>
             <h5 className="text-2xl font-bold leading-none text-white">
               HANDBAG
@@ -32,7 +43,7 @@ const Market = () => {
             <div className="text-lg font-light text-white">
               $1099,00
             </div>
-            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-purple-700 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
+            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none" onClick={handleClick}>
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -49,7 +60,7 @@ const Market = () => {
         <figure className="mb-2">
           <img src="/bag03.jpeg" alt="" className="ml-auto mr-auto h-50" />
         </figure>
-        <div className="flex flex-col p-4 bg-purple-700 rounded-lg">
+        <div className="flex flex-col p-4 bg-blue-700 rounded-lg">
           <div>
             <h5 className="text-2xl font-bold leading-none text-white">
               HANDBAG
@@ -60,7 +71,7 @@ const Market = () => {
             <div className="text-lg font-light text-white">
               $1099,00
             </div>
-            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-purple-700 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
+            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -78,7 +89,7 @@ const Market = () => {
         <figure className="mb-2">
           <img src="/bag05.jpeg" alt="" className="ml-auto mr-auto h-50" />
         </figure>
-        <div className="flex flex-col p-4 bg-purple-700 rounded-lg">
+        <div className="flex flex-col p-4 bg-blue-700 rounded-lg">
           <div>
             <h5 className="text-2xl font-bold leading-none text-white">
               HANDBAG
@@ -89,7 +100,7 @@ const Market = () => {
             <div className="text-lg font-light text-white">
               $8000
             </div>
-            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-purple-700 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
+            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -106,7 +117,7 @@ const Market = () => {
         <figure className="mb-2">
           <img src="/bag04.jpeg" alt="" className="ml-auto mr-auto h-50" />
         </figure>
-        <div className="flex flex-col p-4 bg-purple-700 rounded-lg">
+        <div className="flex flex-col p-4 bg-blue-700 rounded-lg">
           <div>
             <h5 className="text-2xl font-bold leading-none text-white">
               HANDBAG
@@ -117,7 +128,7 @@ const Market = () => {
             <div className="text-lg font-light text-white">
               $2999,00
             </div>
-            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-purple-700 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
+            <button href="#" className="flex w-10 h-10 ml-auto text-white transition duration-300 bg-blue-500 rounded-full hover:bg-white hover:text-purple-900 hover:shadow-xl focus:outline-none">
               <svg xmlns="/" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="m-auto stroke-current">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
