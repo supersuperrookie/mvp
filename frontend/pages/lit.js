@@ -1,8 +1,17 @@
 import { useState } from "react";
-import { useCeramic } from "use-ceramic";
-import { Integration } from "lit-ceramic-sdk";
+let litCeramicIntegration;
+import('lit-ceramic-sdk').then((mod) => {
+  if(typeof window !== 'undefined' || typeof document !== 'undefined') {
+    litCeramicIntegration = new mod.Integration(
+      "https://ceramic-clay.3boxlabs.com",
+      "mumbai"
+    );
+    litCeramicIntegration.startLitClient(window);
+  }
+})
+// import { Integration } from "lit-ceramic-sdk";
 const CONTRACT_ADDRESS = "0x20F7bCABE76351984CaE70ce46CcC7F65410C485";
-const BUYER_ADDRESS = "0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C"; //0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C
+const BUYER_ADDRESS = "0x31458c55Fc0f1666c1B2e72a12F1530e853868Ce"; //0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C
 const SELLER_ADDRESS = "0x3D191C3949F805D49bc384abEf62336F7b7DF8E9"; 
 const evmContractConditions = [
   {
@@ -57,20 +66,21 @@ const evmContractConditions = [
 ];
 
 const Lit = () => {
-  const litCeramicIntegration = new Integration(
-    "https://ceramic-clay.3boxlabs.com",
-    "mumbai"
-  );
-  litCeramicIntegration.startLitClient(window);
-  // const ceramic = useCeramic();
+  // if(typeof window !== 'undefined' || typeof document !== 'undefined') {
+  //   const litCeramicIntegration = new Integration(
+  //     "https://ceramic-clay.3boxlabs.com",
+  //     "mumbai"
+  //   );
+  //   litCeramicIntegration.startLitClient(window);
+  // }
   const [did, setDid] = useState("");
   const [streamId, setStreamId] = useState("");
   const [secret, setSecret] = useState("secret");
   const [decryptedSecret, setDecryptedSecret] = useState("");
   const [progress, setProgress] = useState(false);
 
-  const encryptSecret = () => {
-    const response = litCeramicIntegration
+  const encryptSecret = async () => {
+    const response = await litCeramicIntegration 
       .encryptAndWrite("secret", evmContractConditions, 'evmContractConditions')
       .then((result) => {
         setStreamId(result);
@@ -82,8 +92,8 @@ const Lit = () => {
     e.preventDefault();
     setStreamId(e.target.value);
   }
-  const decryptSecret = () => {
-    const response = litCeramicIntegration
+  const decryptSecret = async () => {
+    const response = await litCeramicIntegration
       .readAndDecrypt(streamId)
       .then((decryptedText) => {
         setDecryptedSecret(decryptedText);
@@ -127,4 +137,4 @@ const Lit = () => {
     return renderButton();
   }
 };
-export default Lit;
+export default Lit

@@ -1,11 +1,8 @@
 import Link from 'next/link';
 import { useState } from 'react'
 import { ethers } from 'ethers'
-
 const Navbar = ({walletAddress}) => {
-  
   return (
-
 <>
       <nav className='flex flex-wrap items-center p-3 bg-blue-600 '>
         <Link href='/'>
@@ -36,6 +33,11 @@ const Navbar = ({walletAddress}) => {
             <Link href='/'>
               <a className='items-center justify-center w-full px-3 py-2 font-bold text-white rounded lg:inline-flex lg:w-auto hover:bg-blue-400 hover:text-white '>
                 COLLECTIONS
+              </a>
+            </Link>
+            <Link href='/lit'>
+              <a className='items-center justify-center w-full px-3 py-2 font-bold text-white rounded lg:inline-flex lg:w-auto hover:bg-blue-400 hover:text-white '>
+                LIT
               </a>
             </Link>
             
