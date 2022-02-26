@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
 
-<footer className="bg-blue-800">
+<footer className="bg-white-800">
 <div className="grid grid-cols-2 gap-8 px-6 py-8 md:grid-cols-4">
 <div>
 <h3 className="mb-6 text-sm font-semibold text-gray-400 uppercase">Company</h3>
@@ -69,7 +69,7 @@ const Footer = () => {
 </ul>
 </div>
 </div>
-<div className="px-4 py-6 bg-blue-700 md:flex md:items-center md:justify-between">
+<div className="px-4 py-6 bg-white-700 md:flex md:items-center md:justify-between">
 <span className="text-sm text-gray-300 sm:text-center">© 2022 <a href="#">AMHO™</a>. All Rights Reserved.
 </span>
 <div className="flex mt-4 space-x-6 sm:justify-center md:mt-0">
