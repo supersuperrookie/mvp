@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Profile from './Profile';
 const Navbar = ({walletAddress}) => {
   return (
 <>
@@ -29,9 +30,7 @@ const Navbar = ({walletAddress}) => {
                 LIT
               </a>
             </Link>
-            
-            {/* TODO: Add profile pic with logged in DID here */}
-            <Link href="/"><a>{walletAddress && walletAddress.substring(0,8) + "..." + walletAddress.substring(34,42)}</a></Link>
+            <Profile/>
           </div>
         </div>
       </nav>

@@ -15,7 +15,7 @@ const Market = () => {
   return ( 
         <div className="">
    
-<div className="flex items-center w-screen min-h-screen bg-indigo-100">
+<div className="flex items-center w-screen min-h-screen bg-white">
   <div className="container flex flex-wrap items-start ml-auto mr-auto">
    
     <div className="w-full pl-5 mt-4 mb-4 lg:pl-2">
