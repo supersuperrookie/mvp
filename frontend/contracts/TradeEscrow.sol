@@ -7,14 +7,12 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 // not currently using
 
-
-
 contract Escrow {
     address payable public owner;
     uint256 public fee;
     uint256 collectedFee;
     IERC20 token;
-    IER721 nft;
+    IERC721 nft;
 
     event Deposited(
         address indexed payee,
@@ -59,13 +57,14 @@ contract Escrow {
     function deposit(
         address _payee,
         uint256 _amount,
-        uint256 _expiration
+        uint256 _expiration,
+        address _nft
     ) public payable requiresFee {
         token.transferFrom(msg.sender, address(this), _amount + fee);
         deposits[_payee][address(token)] += _amount;
         expirations[_payee][address(token)] = block.timestamp + _expiration;
         collectedFee += fee;
-        emit Deposited(_payee, address(token), _amount);
+        emit Deposited(_payee, address(token), _amount, _nft);
     }
 
     function withdraw(address payable _payee) public {
