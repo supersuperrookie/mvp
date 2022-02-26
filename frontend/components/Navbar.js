@@ -1,39 +1,41 @@
 import Link from 'next/link';
-import { useState } from 'react'
-import { ethers } from 'ethers'
-
-const Navbar = () => {
-  const [loginState, setLoginState] = useState();
-
-  const login = async () => {
-      setLoginState("Connecting to your wallet..." )
-    if(!window.ethereum) {
-      setLoginState("No Metamask wallet... please install");
-      return;
-    }
-  
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  await provider.send("eth_requestAccounts", []);  
-  const signer = provider.getSigner();
-  const walletAddr = await signer.getAddress();
-  console.log(`walletAdr`, walletAddr)  
-  const signature = await signer.signMessage("Welcome to AMHO");
-  console.log(`signature`, signature)
-}
-  
-  
+import Profile from './Profile';
+const Navbar = ({walletAddress}) => {
   return (
-    <nav className='' style={{backgroundColor:''}}>
-      <div className="logo">
-        <h1>AMHO</h1>
-      </div>
-      <Link href="/"><a>Dashboard</a></Link>
-      <Link href="/market"><a>Marketplace</a></Link>
-      <Link href="/lit"><a>Testing</a></Link>
-      <Link href="/user"><a>Connect</a></Link>
-         <button onClick={login} style={{backgroundColor:"red", color:"whitesmoke", padding: 10}}>Connect</button>
-   
-    </nav>
+<>
+      <nav className='flex flex-wrap items-center p-3 bg-white'>
+        <Link href='/'>
+          <a className='inline-flex items-center p-2 mr-4 '> 
+            <span className='text-xl font-bold tracking-wide text-black uppercase'>
+              AMHO
+            </span>
+          </a>
+        </Link>
+        <button className='inline-flex p-3 ml-auto text-white rounded outline-none hover:bg-white-600 lg:hidden hover:text-white'>
+        </button>
+        <div className='hidden w-full lg:inline-flex lg:flex-grow lg:w-auto'>
+          <div className='flex flex-col items-start w-full lg:inline-flex lg:flex-row lg:ml-auto lg:w-auto lg:items-center lg:h-auto'>
+            <Link href='/'>
+              <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
+                COLLECTIONS
+              </a>
+            </Link>
+            <Link href='/market'>
+              <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
+                E-SHOP
+              </a>
+            </Link>
+            <Link href='/lit'>
+              <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
+                LIT
+              </a>
+            </Link>
+            <Profile/>
+          </div>
+        </div>
+      </nav>
+    </>
+
 );
 }
  
