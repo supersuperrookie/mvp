@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { formatDid } from "../utils/formatDid"
 import withLit from "../utils/withLit"
 const Profile = () => {
     if(typeof window !== 'undefined' && typeof window.did !== 'undefined')
@@ -10,7 +10,7 @@ const Profile = () => {
             </div>
             <div>
                 <div class="text-xl font-medium text-black">User</div>
-                <div class="text-slate-500">{window.did._id}</div>
+                <div class="text-slate-500">{formatDid(window.did._id)}</div>
             </div>
         </div>
     )
