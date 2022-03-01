@@ -88,7 +88,6 @@ const Lit = ({ litCeramicIntegration }) => {
       .encryptAndWrite("secret", evmContractConditions, 'evmContractConditions')
       .then((result) => {
         setStreamId(result);
-        alert(`Result: ${result}`);
       });
   };
 
