@@ -32,7 +32,7 @@ contract EscrowERC721 {
       fee = _fee;
       counter = 0;
   }
-
+  // TODO: Might not need
   modifier requiresFee() {
       require(msg.value < fee);
         _;
@@ -43,6 +43,7 @@ contract EscrowERC721 {
         _;
   }
 
+  // TODO: Might not need
   function transferFee() public onlyOwner {
       feeToken.approve(owner, collectedFee);
       feeToken.transfer(owner, collectedFee);

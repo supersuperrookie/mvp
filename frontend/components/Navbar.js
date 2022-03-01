@@ -15,7 +15,7 @@ const Navbar = ({walletAddress}) => {
         </button>
         <div className='hidden w-full lg:inline-flex lg:flex-grow lg:w-auto'>
           <div className='flex flex-col items-start w-full lg:inline-flex lg:flex-row lg:ml-auto lg:w-auto lg:items-center lg:h-auto'>
-            <Link href='/'>
+            <Link href='/collections'>
               <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
                 COLLECTIONS
               </a>
