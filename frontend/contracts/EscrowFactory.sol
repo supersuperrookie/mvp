@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 import "./TradeEscrow.sol";
 
-// gimme a little my b yall
+// INFO: 
 
 contract EscrowFactory {
     address[] escrows;

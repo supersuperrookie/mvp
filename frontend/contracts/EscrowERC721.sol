@@ -56,7 +56,14 @@ contract EscrowERC721 {
     modifier onlycreator() {
         require(msg.sender == creator, "Must be the escrow creator.");
         _;
-    }
+  }
+
+  // TODO: Might not need
+  function transferFee() public onlyOwner {
+      feeToken.approve(owner, collectedFee);
+      feeToken.transfer(owner, collectedFee);
+      collectedFee = 0;
+  }
 
     function transferFee() public onlycreator {
         feeToken.approve(creator, feeReceived);

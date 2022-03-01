@@ -1,6 +1,26 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import Profile from './Profile';
-const Navbar = ({walletAddress}) => {
+const NavItems = [
+  {
+    label: 'COLLECTIONS',
+    url: "/collections",
+    active: false
+  },
+  {
+    label: 'E-SHOP',
+    url: "/shop",
+    active: false
+  },
+  {
+    label: 'LIT',
+    url: "/lit",
+    active: false
+  }
+]
+
+const Navbar = () => {
+  const router = useRouter();
   return (
 <>
       <nav className='flex flex-wrap items-center p-3 bg-white'>
@@ -15,21 +35,20 @@ const Navbar = ({walletAddress}) => {
         </button>
         <div className='hidden w-full lg:inline-flex lg:flex-grow lg:w-auto'>
           <div className='flex flex-col items-start w-full lg:inline-flex lg:flex-row lg:ml-auto lg:w-auto lg:items-center lg:h-auto'>
-            <Link href='/'>
-              <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
-                COLLECTIONS
-              </a>
-            </Link>
-            <Link href='/market'>
-              <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
-                E-SHOP
-              </a>
-            </Link>
-            <Link href='/lit'>
-              <a className='items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4'>
-                LIT
-              </a>
-            </Link>
+            {
+              NavItems.map((item) => (
+              <Link href={item.url}>
+                <a className={`items-center justify-center w-full px-3 py-2 font-bold text-black rounded lg:inline-flex lg:w-auto hover:underline decoration-4
+                  ${ router.asPath === item.url
+                    ? "underline"
+                    : ""
+                }
+                `}>
+                  {item.label}
+                </a>
+              </Link>
+              ))
+            }
             <Profile/>
           </div>
         </div>
