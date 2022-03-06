@@ -7,7 +7,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract AMHOToken is ERC721PresetMinterPauserAutoId {
     using Counters for Counters.Counter;
+    using Strings for uint256;
     Counters.Counter private _tokenIds;
+    mapping(uint256 => string) private _tokenURIs;
 
     //is NFT locked
     mapping(uint256 => bool) public unlocked;
@@ -31,7 +33,7 @@ contract AMHOToken is ERC721PresetMinterPauserAutoId {
         override
         returns (string memory)
     {
-        return string(abi.encodePacked(super.tokenURI(tokenId), ".json"));
+        return super.tokenURI(tokenId);
     }
 
     function _beforeTokenTransfer(
