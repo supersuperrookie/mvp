@@ -1,12 +1,19 @@
-import Head from 'next/head'
-import User from '../components/User'
-import { useState } from 'react'
-import { ethers } from 'ethers'
+import {
+  webClient,
+  getRecord
+} from '../utils/withIdentity'
 
 
-export default function Home({setWalletAddress, walletAddress}) {
+
+export default function Home() {
+  async function connectCeramic() {
+    const cdata = await webClient()
+    const {id, selfId, error} = cdata;
+  }
+
   return (
-    <div> 
-    </div>
+    <>
+      <button className="rounded-full" onClick={connectCeramic}>Login</button>
+    </>
   )
 }
