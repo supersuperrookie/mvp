@@ -13,12 +13,7 @@ const NavItems = [
     label: "E-SHOP",
     url: "/shop",
     active: false,
-  },
-  {
-    label: "LIT",
-    url: "/lit",
-    active: false,
-  },
+  }
 ];
 
 const LoginButton = react.forwardRef(({ onClick, href }, ref) => {

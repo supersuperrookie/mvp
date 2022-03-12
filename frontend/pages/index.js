@@ -1,19 +1,11 @@
-import {
-  webClient,
-  getRecord
-} from '../utils/withIdentity'
+import { useRouter } from "next/router"
 
-
-
-export default function Home() {
-  async function connectCeramic() {
-    const cdata = await webClient()
-    const {id, selfId, error} = cdata;
+export default function RedirectPage() {
+  const router = useRouter()
+  if(typeof window !== 'undefined') {
+    router.push('/collections')
   }
-
-  return (
-    <>
-      <button className="rounded-full" onClick={connectCeramic}>Login</button>
-    </>
+  return(
+    <></>
   )
 }
