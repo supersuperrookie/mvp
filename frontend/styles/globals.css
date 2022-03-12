@@ -1,12 +1,6 @@
 body {
   background: #fafcfd;
-  color: rgb(0, 0, 0);
   font-family: "Nunito";
-}
-
-a {
-  color: #333;
-  text-decoration: none;
 }
 
 .content {

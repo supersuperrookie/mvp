@@ -6,11 +6,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Roboto', 'sans-serif', 'Indigo'],
-        indigo: 'Indigo'
-      }
-    }
-
+        sans: ["Roboto", "sans-serif", "Indigo"],
+        indigo: "Indigo",
+      },
+    },
   },
   plugins: [],
-}
+};

@@ -9,16 +9,10 @@
   }
 }
 
-a {
-  color: #333;
-  text-decoration: none;
-}
-
 body {
   background: #fafcfd;
   color: rgb(0, 0, 0);
   font-family: "Roboto";
-  height: 100vh;
 }
 
 nav {
@@ -54,7 +48,6 @@ a {
 footer {
   display: block;
   text-align: center;
-  padding: 30px 0;
   margin-top: 60px;
   color: rgb(12, 87, 156);
   border-top: 1px solid #eaeaea;
