@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Escrow20 is Ownable {
+    
     address payable public buyer; 
     address payable public seller; 
     address public AMHOtoken; 
@@ -32,7 +33,7 @@ contract Escrow20 is Ownable {
         buyer = payable(address(0));
         seller = payable(address(0)); 
         amount = 0; 
-        deposit = 0;
+        fixDeposit = 0;
         stateOf = state.Creation; 
     }
 
@@ -53,7 +54,7 @@ contract Escrow20 is Ownable {
     function ExchangeBackToBuyer() public onlyBuyer() {
         require(stateOf = state.Sent, " Seller should initiate the exchange");
         stateOf = state.Received; 
-        IERC20(AMHO.token).transfer(buyer, deposit); 
+        IERC20(AMHO.token).transfer(buyer, fixDeposit); 
         IERC20(AMHO.token).transfer(seller, amount); 
     }
 
