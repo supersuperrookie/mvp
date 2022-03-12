@@ -2,39 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-a {
-    color: #333;
-    text-decoration: none;
+@layer base {
+  @font-face {
+    font-family: 'Indigo';
+    src: url(/fonts/indigo.ttf) format("truetype");
+  }
 }
 
 body {
-    background: #fafcfd;
-    color: rgb(0, 0, 0);
-    font-family: "Roboto";
-    height: 100vh;
+  background: #fafcfd;
+  color: rgb(0, 0, 0);
+  font-family: "Roboto";
 }
 
 nav {
-    margin: 0px auto 50px;
-    padding: 5px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
+  margin: 0px auto 50px;
+  padding: 5px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 nav a {
-    margin-left: 5px;
-    font-weight: bold;
-    font-size: large;
-    padding-inline: 40px;
+  margin-left: 5px;
+  font-weight: bold;
+  font-size: large;
+  padding-inline: 40px;
 }
 
 nav .logo {
-    margin-right: auto;
+  margin-right: auto;
 }
-
-
-
 
 a {
   color: inherit;
@@ -47,13 +45,14 @@ a {
   margin: 0;
 }
 
-
 footer {
-    display: block;
-    text-align: center;
-    padding: 30px 0;
-    margin-top: 60px;
-    color: rgb(12, 87, 156);
-    border-top: 1px solid #eaeaea;
+  display: block;
+  text-align: center;
+  margin-top: 60px;
+  color: rgb(12, 87, 156);
+  border-top: 1px solid #eaeaea;
+}
 
+.logonew {
+  font-family: "Indigo";
 }
