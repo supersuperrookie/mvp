@@ -6,6 +6,8 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
+
+//NFT ERC721 
 contract EscrowNFT721 is Ownable {
 
     address payable public buyer; 
