@@ -16,13 +16,6 @@ const NavItems = [
   }
 ];
 
-const LoginButton = react.forwardRef(({ onClick, href }, ref) => {
-  return (
-    <a href={href} onClick={onClick} ref={ref}>
-      Login
-    </a>
-  );
-});
 const Navbar = () => {
   const router = useRouter();
   return (

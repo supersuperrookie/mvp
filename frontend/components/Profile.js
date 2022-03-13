@@ -21,16 +21,16 @@ const Profile = () => {
 };
 
 const NoProfile = () => {
-const router = useRouter()
+  const router = useRouter();
   async function connectCeramic() {
     const cdata = await webClient();
     const { id, selfId, error } = cdata;
-    if(id) {
-        router.push('/');
+    if (id) {
+      router.push('/collections');
     }
   }
   return (
-    <Link href="/">
+    <Link href="#">
       <a
         onClick={connectCeramic}
         className="inline-flex items-center p-2 mr-4 "
