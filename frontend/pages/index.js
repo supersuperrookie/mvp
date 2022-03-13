@@ -1,12 +1,11 @@
-import Head from 'next/head'
-import User from '../components/User'
-import { useState } from 'react'
-import { ethers } from 'ethers'
+import { useRouter } from "next/router"
 
-
-export default function Home({setWalletAddress, walletAddress}) {
-  return (
-    <div> 
-    </div>
+export default function RedirectPage() {
+  const router = useRouter()
+  if(typeof window !== 'undefined') {
+    router.push('/collections')
+  }
+  return(
+    <></>
   )
 }

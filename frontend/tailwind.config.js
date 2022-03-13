@@ -4,9 +4,12 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    fontFamily: {
-      sans: ['Roboto', 'sans-serif']
-    }
+    extend: {
+      fontFamily: {
+        sans: ["Roboto", "sans-serif", "Indigo"],
+        indigo: "Indigo",
+      },
+    },
   },
   plugins: [],
-}
+};
