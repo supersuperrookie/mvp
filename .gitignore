@@ -259,20 +259,6 @@ Temporary Items
 # yarn v2
 
 ### Web ###
-*.asp
-*.cer
-*.csr
-*.css
-*.htm
-*.html
-*.js
-*.jsp
-*.php
-*.rss
-*.wasm
-*.wat
-*.xhtml
-
 package-lock.json
 
 # End of https://www.toptal.com/developers/gitignore/api/solidity,web,node,osx,linux
