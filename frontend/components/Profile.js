@@ -26,7 +26,7 @@ const NoProfile = () => {
     const cdata = await webClient();
     const { id, selfId, error } = cdata;
     if (id) {
-      router.push('/collections');
+      router.push('/shop');
     }
   }
   return (
