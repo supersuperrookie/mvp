@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatDid } from "../utils/formatDid";
 import withLit from "../utils/withLit";
-import { webClient } from "../utils/withIdentity";
+import { webClient, getRecord } from "../utils/withIdentity";
 import { useRouter } from "next/router";
 
 const Profile = () => {
@@ -9,10 +9,10 @@ const Profile = () => {
     return (
       <div className="p-6 rounded-xl flex items-center space-x-4">
         <div className="shrink-0">
-          <img className="h-12 w-12" src="/profile.png" alt="" />
+          <img className="h-12 w-12 rounded-full" src="/profile.png" alt="" />
         </div>
         <div>
-          <div className="text-xl font-medium text-black">User</div>
+          <div className="text-xl font-medium text-black">Bufficorn</div>
           <div className="text-slate-500">{formatDid(window.did._id)}</div>
         </div>
       </div>
@@ -24,9 +24,11 @@ const NoProfile = () => {
   const router = useRouter();
   async function connectCeramic() {
     const cdata = await webClient();
-    const { id, selfId, error } = cdata;
+    const { client, id, selfId, error } = cdata;
     if (id) {
       router.push('/shop');
+      const pdata = await getRecord({...client});
+      console.log(pdata?.image);
     }
   }
   return (

@@ -60,7 +60,6 @@ const Collections = () => {
   const CollectionItem = ({ item, id }) => {
     return (
       <div>
-        <a href={`#`} className="" key={id}>
           {item.status == Status.SHIPPED ? (
             <IconShipped type={Status.SHIPPED} />
           ) : item.status == Status.MATED ? (
@@ -71,7 +70,6 @@ const Collections = () => {
             ""
           )}
           <img src="/bagplaceholder2.png" alt="" />
-        </a>
       </div>
     );
   };

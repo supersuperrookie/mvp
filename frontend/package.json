@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@3id/connect": "^0.2.5",
+    "@self.id/core": "^0.3.0",
+    "@self.id/image-utils": "^0.2.0",
     "@self.id/web": "^0.3.0",
     "dotenv": "^16.0.0",
     "ethers": "^5.5.4",

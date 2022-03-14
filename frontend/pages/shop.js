@@ -32,7 +32,6 @@ const dummyShopData = [
 ];
 const Shop = () => {
   const [shopData, setShopData] = useState(dummyShopData);
-  const router = useRouter();
 
   return (
     <div className={LayoutMargin}>
@@ -51,10 +50,14 @@ const Shop = () => {
 };
 
 const ShopItem = ({ item, id }) => {
+  const router = useRouter();
+  const handlePageChange = (id) => {
+    router.push(`/shop/${id}`, undefined, {shallow: true});
+  }
   return (
     <div>
       <div>
-        <a href={`/shop/${id}`} className="" key={id}>
+        <a onClick={handlePageChange} className="" key={id}>
           <img src="/bagplaceholder2.png" alt="" />
         </a>
       </div>
