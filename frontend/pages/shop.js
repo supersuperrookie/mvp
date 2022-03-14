@@ -51,22 +51,27 @@ const Shop = () => {
 
 const ShopItem = ({ item, id }) => {
   const router = useRouter();
-  const handlePageChange = (id) => {
-    router.push(`/shop/${id}`, undefined, {shallow: true});
-  }
+  const handlePageChange = () => {
+    router.push(`/shop/${id}`, undefined, { shallow: true });
+  };
   return (
-    <div>
+    <div className="cursor-pointer">
       <div>
-        <a onClick={handlePageChange} className="" key={id}>
+        <a onClick={handlePageChange} key={id}>
           <img src="/bagplaceholder2.png" alt="" />
         </a>
       </div>
-      <div className="flex p-4">
-        <div className="flex-none">
-          <h1 className="font-bold">AMHO BAG</h1>
+      <div className="p-4">
+        <div className="flex">
+          <div>
+            <span className="text-xl font-bold">AMHO BAG</span>
+          </div>
         </div>
-        <div className="grow"></div>
-        <div className="flex-none">{item.price} MATIC</div>
+        <div className="flex">
+          <div>
+            <span className="text-sm">{item.price} MATIC</span>
+          </div>
+        </div>
       </div>
     </div>
   );

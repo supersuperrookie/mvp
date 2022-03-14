@@ -1,11 +1,16 @@
-import Link from "next/link";
+import { useGlobal } from "../utils/global-state";
 import { formatDid } from "../utils/formatDid";
-import withLit from "../utils/withLit";
 import { webClient, getRecord } from "../utils/withIdentity";
 import { useRouter } from "next/router";
 
+import Link from "next/link";
+import withLit from "../utils/withLit";
+
+
+
 const Profile = () => {
-  if (typeof window !== "undefined" && typeof window.did !== "undefined")
+  const [globalState, globalActions] = useGlobal();
+  if (typeof globalState.did !== 'undefined')
     return (
       <div className="p-6 rounded-xl flex items-center space-x-4">
         <div className="shrink-0">
@@ -13,7 +18,7 @@ const Profile = () => {
         </div>
         <div>
           <div className="text-xl font-medium text-black">Bufficorn</div>
-          <div className="text-slate-500">{formatDid(window.did._id)}</div>
+          <div className="text-slate-500">{formatDid(globalState.did)}</div>
         </div>
       </div>
     );
@@ -22,15 +27,22 @@ const Profile = () => {
 
 const NoProfile = () => {
   const router = useRouter();
+  const [globalState, globalActions] = useGlobal();
+
   async function connectCeramic() {
     const cdata = await webClient();
     const { client, id, selfId, error } = cdata;
+
     if (id) {
+      globalActions.setDID(id);
+      console.log(id);
       router.push('/shop');
       const pdata = await getRecord({...client});
       console.log(pdata?.image);
     }
+    
   }
+
   return (
     <Link href="#">
       <a
