@@ -6,11 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@ceramicnetwork/3id-did-resolver": "^1.4.16",
+    "@ceramicnetwork/http-client": "^1.5.7",
+    "3id-did-provider": "^1.1.1",
     "cookie-parser": "~1.4.4",
+    "crypto": "^1.0.1",
     "debug": "~2.6.9",
+    "dids": "^2.4.3",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "key-did-resolver": "^1.4.4",
+    "morgan": "~1.9.1",
+    "uint8arrays": "^3.0.0"
   }
 }
