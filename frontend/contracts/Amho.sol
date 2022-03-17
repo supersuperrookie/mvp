@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.4; 
 
+import "./Escrow.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -19,14 +20,14 @@ contract AMHO is ERC721URIStorage {
     mapping(uint256 => bool) idToSecretStatus;
     mapping(uint256 => address) idToOwner;
 
-    address escrowContract;
+    Escrow escrowContract;
     IERC20 escrowToken;
     IERC721 escrowNFT;
 
     constructor(IERC20 _escrowToken, IERC721 _escrowNFT, address _escrowContract) ERC721("AMHO", "AMHO") {
         owner = payable(msg.sender);
 
-        escrowContract = _escrowContract;
+        escrowContract = Escrow(_escrowContract);
         escrowToken = _escrowToken;
         escrowNFT = _escrowNFT;
     }
@@ -39,6 +40,13 @@ contract AMHO is ERC721URIStorage {
         return idToSecretStatus[_tokenId];
     }
 
+    function unlockById(uint256 _tokenId, bytes32 _secret) public {
+        bytes32 secret = idToSecret[_tokenId];
+        require(secret == _secret, "Unauthorized");
+        escrowContract.releaseOrder(_tokenId);
+
+    }
+
     // TODO: Mint NFT with secret code
 
     function mintToken(bytes32 secret, string memory tokenURI) public payable returns (uint) {
@@ -49,7 +57,7 @@ contract AMHO is ERC721URIStorage {
         idToOwner[id] = msg.sender;
         idToSecretStatus[id] = false;
 
-        setApprovalForAll(escrowContract, true);
+        setApprovalForAll(address(escrowContract), true);
         _mint(msg.sender, id);
         _setTokenURI(id, tokenURI);
 

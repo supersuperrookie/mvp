@@ -55,13 +55,13 @@ contract Escrow is Ownable {
         emit DepositedNFT(seller, address(amho));
     }
 
-    function releaseOrder(uint256 _tokenId) internal {
+    function releaseOrder(uint256 _tokenId) external {
         EscrowOrder memory escrowOrder = escrowById[_tokenId];
         address _buyer = escrowOrder.buyer;
         address _seller = escrowOrder.seller;
         uint256 _value = escrowOrder.value;
         amho.transferFrom(address(this), _buyer, _tokenId);
         token.transfer(_seller, _value);
-
+        delete escrowById[_tokenId];
     }
 }
