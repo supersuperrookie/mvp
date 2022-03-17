@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import withLit from '../utils/withLit';
+import { useGlobal } from "../utils/global-state";
+import withLit from "../utils/withLit";
 // let litCeramicIntegration;
 // import('lit-ceramic-sdk').then((mod) => {
 //   if(typeof window !== 'undefined' || typeof document !== 'undefined') {
@@ -11,9 +12,10 @@ import withLit from '../utils/withLit';
 //   }
 // })
 // import { Integration } from "lit-ceramic-sdk";
-const CONTRACT_ADDRESS = "0x20F7bCABE76351984CaE70ce46CcC7F65410C485";
-const BUYER_ADDRESS = "0x31458c55Fc0f1666c1B2e72a12F1530e853868Ce"; //0x5fb827c257E68082d55A6ff5AB3a8be76C20BB5C
-const SELLER_ADDRESS = "0x3D191C3949F805D49bc384abEf62336F7b7DF8E9";
+const CONTRACT_ADDRESS = "0xB54341db961E3849b0a950AB41c9e1C4C71FE216";
+// const BUYER_ADDRESS = "0xCf65E1e8343465fef356a831e5F716BcAcf045Bfasdasd";
+// const SELLER_ADDRESS = "0xbde1403056C81138fA8Abe97Ca19F39900073473";
+
 const evmContractConditions = [
   {
     contractAddress: CONTRACT_ADDRESS,
@@ -35,11 +37,11 @@ const evmContractConditions = [
     chain: "mumbai",
     returnValueTest: {
       key: "",
-      comparator: "!=",
-      value: BUYER_ADDRESS,
+      comparator: "=",
+      value: ":userAddress",
     },
   },
-  { "operator": "or" },
+  { operator: "or" },
   {
     contractAddress: CONTRACT_ADDRESS,
     functionName: "getSeller",
@@ -60,12 +62,11 @@ const evmContractConditions = [
     chain: "mumbai",
     returnValueTest: {
       key: "",
-      comparator: "!=",
-      value: SELLER_ADDRESS,
+      comparator: "=",
+      value: ":userAddress",
     },
-  }
+  },
 ];
-
 const Lit = ({ litCeramicIntegration }) => {
   // if(typeof window !== 'undefined' || typeof document !== 'undefined') {
   //   const litCeramicIntegration = new Integration(
@@ -74,6 +75,7 @@ const Lit = ({ litCeramicIntegration }) => {
   //   );
   //   litCeramicIntegration.startLitClient(window);
   // }
+  const [globalState, globalActions] = useGlobal();
   const [did, setDid] = useState("");
   const [streamId, setStreamId] = useState("");
   const [decryptedSecret, setDecryptedSecret] = useState("");
@@ -81,11 +83,11 @@ const Lit = ({ litCeramicIntegration }) => {
 
   useEffect(() => {
     setLit(litCeramicIntegration);
-  }, [setLit])
+  }, [setLit]);
 
   const encryptSecret = async () => {
     const response = await litCeramicIntegration
-      .encryptAndWrite("secret", evmContractConditions, 'evmContractConditions')
+      .encryptAndWrite("secret", evmContractConditions, "evmContractConditions")
       .then((result) => {
         setStreamId(result);
       });
@@ -94,7 +96,7 @@ const Lit = ({ litCeramicIntegration }) => {
   const handleInput = (e) => {
     e.preventDefault();
     setStreamId(e.target.value);
-  }
+  };
   const decryptSecret = async () => {
     const response = await litCeramicIntegration
       .readAndDecrypt(streamId)
@@ -104,20 +106,13 @@ const Lit = ({ litCeramicIntegration }) => {
       });
   };
 
-  return !lit ?
-    (
-      <>
-        <button disabled={true}>Connecting...</button>
-      </>
-    )
-    : (
-      <>
-        {/* <button onClick={handleLogin}>Sign In</button> */}
-        <button onClick={encryptSecret}>Encrypt Secret</button>
-        <button onClick={decryptSecret}>Decrypt</button>
-        <input type="text" value={streamId} onChange={handleInput} />
-      </>
-
-    );
+  return (
+    <>
+      {/* <button onClick={handleLogin}>Sign In</button> */}
+      <button onClick={encryptSecret}>Encrypt Secret</button>
+      <button onClick={decryptSecret}>Decrypt</button>
+      <input type="text" value={streamId} onChange={handleInput} />
+    </>
+  );
 };
-export default withLit(Lit)
+export default withLit(Lit);

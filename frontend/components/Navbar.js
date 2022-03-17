@@ -13,6 +13,11 @@ const NavItems = [
     label: "E-SHOP",
     url: "/shop",
     active: false,
+  },
+  {
+    label: "Lit",
+    url: "/lit",
+    active: false,
   }
 ];
 

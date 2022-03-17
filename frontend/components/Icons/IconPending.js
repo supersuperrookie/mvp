@@ -1,10 +1,30 @@
-const IconPending = () => {
+import { Status } from "../../utils/constants";
+import { useGlobal } from "../../utils/global-state";
+
+const pendingStyle = `h-10 w-10 text-slate-200 hover:text-gray-800`;
+const pendingInitStyle = `h-10 w-10 text-red-600`;
+const pendingMateStyle = `h-10 w-10 text-blue-800`;
+
+const IconPending = ({ status, id }) => {
+  const [globalState, globalActions] = useGlobal();
   return (
     <div className="flex justify-center p-2">
-      <a className="cursor-pointer">
+      <a
+        className="cursor-pointer"
+        onClick={(e) => {
+          e.preventDefault();
+          globalActions.ownedSetStatusPendingMate(id);
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-10 w-10 text-slate-200 hover:text-gray-800"
+          className={
+            status === Status.PENDING
+              ? pendingStyle
+              : status === Status.PENDING_INIT
+              ? pendingInitStyle
+              : pendingMateStyle
+          }
           viewBox="0 0 20 20"
           fill="currentColor"
         >

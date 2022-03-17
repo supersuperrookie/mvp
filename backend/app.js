@@ -12,7 +12,6 @@ const { DID } = require("dids");
 
 // const ThreeIdProvider = require("3id-did-provider");
 
-const { getResolver: nftDIDResolver } = require("nft-did-resolver");
 const { getResolver: keyDIDResolver } = require("key-did-resolver");
 // const {
 //   getResolver: threeDIDResolver,
@@ -101,16 +100,16 @@ const getSeed = () => {
       },
     },
   };
-  // const nftResolver = getResolver(config);
+  console.log(getResolver)
   // const didResolver = new Resolver(nftResolver);
   // const erc721result = await didResolver.resolve(
   //   "did:nft:eip155:1_erc721:0xb300a43751601bd54ffee7de35929537b28e1488_2"
   // );
   const seed = getSeed(); // This seed is created
-  const threeIdResolver = ThreeIdResolver.getResolver(ceramic)
-  const didResolver = new Resolver(threeIdResolver);
-  const doc = await didResolver.resolve('did:3:kjzl6cwe1jw14b4bq5om463og0g57ibjtzsd68344suuyiiusrasnfr752t0iot')
-  console.log(doc)
+  // const threeIdResolver = ThreeIdResolver.getResolver(ceramic)
+  // const didResolver = new Resolver(threeIdResolver);
+  // const doc = await didResolver.resolve('did:3:kjzl6cwe1jw14b4bq5om463og0g57ibjtzsd68344suuyiiusrasnfr752t0iot')
+  // console.log(erc721result)
   // const threeID = await ThreeIdProvider.default.create({
   //   authId: "myAuthID",
   //   authSecret: seed,

@@ -1,6 +1,6 @@
 import { useGlobal } from "../utils/global-state";
 import { formatDid } from "../utils/formatDid";
-import { webClient, getRecord } from "../utils/withIdentity";
+import { webClient, getRecord, getAccount } from "../utils/withIdentity";
 import { useRouter } from "next/router";
 
 import Link from "next/link";
@@ -19,6 +19,7 @@ const Profile = () => {
         <div>
           <div className="text-xl font-medium text-black">Bufficorn</div>
           <div className="text-slate-500">{formatDid(globalState.did)}</div>
+          <div className="text-slate-500">{globalState.account}</div>
         </div>
       </div>
     );
@@ -31,14 +32,13 @@ const NoProfile = () => {
 
   async function connectCeramic() {
     const cdata = await webClient();
-    const { client, id, selfId, error } = cdata;
+    const { account, client, id, selfId, error } = cdata;
 
-    if (id) {
+    if (id && account) {
+      globalActions.setAccount(account);
       globalActions.setDID(id);
-      console.log(id);
       router.push('/shop');
       const pdata = await getRecord({...client});
-      console.log(pdata?.image);
     }
     
   }

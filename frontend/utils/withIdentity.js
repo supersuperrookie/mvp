@@ -12,7 +12,6 @@ async function webClient({
   client = null
 } = {}) {
   let ethereum = window.ethereum;
-
   if (!ethereum) return {
     error: "No ethereum wallet detected"
   }
@@ -35,12 +34,13 @@ async function webClient({
   await client.authenticate(provider)
 
   const selfId = new SelfID({ client })
+  const account = address;
   const id = selfId.did._id
   window.did = selfId.did;
   ceramic.did = selfId.did;
 
   return {
-    client, id, selfId, error: null
+    account, client, id, selfId, error: null
   }
 }
 
@@ -55,7 +55,6 @@ const caip10Links = {
   mumbai: "@eip155:80001",
   fuji: "@eip155:43113",
 }
-
 /*
 CAIP-10 Account IDs is a blockchain agnostic way to describe an account on any blockchain. This may be an externally owned key-pair account, or a smart contract account. Ceramic uses CAIP-10s as a way to lookup the DID of a user using a caip10-link streamType in Ceramic. Learn more in the Ceramic documentation.
 TODO: If time then add fuji functionality
