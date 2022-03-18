@@ -7,10 +7,11 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "hardhat/console.sol";
 
 // Mint and Listing Contract
 
-contract AMHO is ERC721URIStorage {
+contract Amho is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -21,15 +22,13 @@ contract AMHO is ERC721URIStorage {
     mapping(uint256 => address) idToOwner;
 
     Escrow escrowContract;
-    IERC20 escrowToken;
-    IERC721 escrowNFT;
+    // address escrowContractAddress;
 
-    constructor(IERC20 _escrowToken, IERC721 _escrowNFT, address _escrowContract) ERC721("AMHO", "AMHO") {
-        owner = payable(msg.sender);
-
-        escrowContract = Escrow(_escrowContract);
-        escrowToken = _escrowToken;
-        escrowNFT = _escrowNFT;
+    // constructor(address _escrowContractAddress) ERC721("AMHO", "AMHO") {
+    constructor() ERC721("AMHO", "AMHO") {
+        // owner = payable(msg.sender);
+        // escrowContractAddress = _escrowContractAddress;
+        // escrowContract = Escrow(_escrowContractAddress);
     }
 
     function getSecretById(uint256 _tokenId) public view returns (bytes32) {
@@ -49,6 +48,7 @@ contract AMHO is ERC721URIStorage {
 
     // TODO: Mint NFT with secret code
 
+    // function mintToken(bytes32 secret, string memory tokenURI) public payable returns (uint) {
     function mintToken(bytes32 secret, string memory tokenURI) public payable returns (uint) {
         _tokenIds.increment();
         uint256 id = _tokenIds.current();
@@ -60,8 +60,8 @@ contract AMHO is ERC721URIStorage {
         setApprovalForAll(address(escrowContract), true);
         _mint(msg.sender, id);
         _setTokenURI(id, tokenURI);
-
         return id;
     }
 
+    // TODO: Build Listing Contract
 }

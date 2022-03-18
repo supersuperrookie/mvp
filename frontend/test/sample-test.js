@@ -1,22 +1,31 @@
-const { expect } = require('chai');
-const { ethers } = require("hardhat")
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+const { randomBytes } = require("crypto");
+describe("Contract Tests", function () {
+  it("Create NFT and deposit it", async function () {
+    const [buyerAddress] = await ethers.getSigners();
+    secret = new Uint8Array(randomBytes(32));
+    hashedSecret = ethers.utils.solidityKeccak256(["bytes32"], [secret]);
+    const Escrow = await ethers.getContractFactory("Escrow");
+    const escrow = await Escrow.deploy();
+    await escrow.deployed();
 
-describe("Smart Contract Tests", function() {
+    const escrowAddress = escrow.address;
 
-    this.beforeEach(async function() {
-        // This is executed before each test
-                const TestBags = await ethers.getContractFactory("TestBags");
-                testBags = await TestBags.deploy("Test Bags", "BAGS");
-    })
+    const NFT = await ethers.getContractFactory("Amho");
+    // const nft = await NFT.deploy(escrowAddress);
+    const nft = await NFT.deploy();
+    await nft.deployed();
 
-    it("NFT is minted successfully", async function() {
+    const nftAddress = nft.address;
 
-        [account1] = await ethers.getSigners();
-        console.log(account1)
-        const tokenURI = "https://opensea-creatures-api.herokuapp.com/api/creature/1"
-        const tx = await testBags.connect(account1).mint(tokenURI);
-        console.log(tx)
+    escrow
+      .connect(buyerAddress)
+      .setTokenAddresses(
+        nftAddress
+      );
 
-    })
-
-})
+    const mintedId = await nft.connect(buyerAddress).mintToken(hashedSecret, "https://amho.xyz");
+    await escrow.connect(buyerAddress).depositToken(mintedId.value, ethers.utils.parseUnits(".1"));
+  });
+});
