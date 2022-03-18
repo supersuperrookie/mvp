@@ -113,4 +113,46 @@ contract AmhoSale {
   {
     projectState = ProjectState.deliveryInitiated;
   }
+
+  function acknowledgeDelivery()
+    public
+    inProjectState(ProjectState.deliveryInitiated)
+    onlyBuyer
+  {
+    projectState = ProjectState.delivered;
+    IERC20(paymentToken).safeTransferFrom(address(this), sellerAddress, price);
+    IERC721(nftAddress).safeTransferFrom(address(this), buyerAddress, nftID);
+    projectState = ProjectState.closed;
+  }
+
+  /// @notice Provides EIP-2612 signed approval for this contract to spend user tokens.
+  /// @param token Address of ERC-20 token.
+  /// @param amount Token amount to grant spending right over.
+  /// @param deadline Termination for signed approval in Unix time.
+  /// @param v The recovery byte of the signature.
+  /// @param r Half of the ECDSA signature pair.
+  /// @param s Half of the ECDSA signature pair.
+  function permitThis(
+    address token,
+    uint256 amount,
+    uint256 deadline,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external {
+    /// @dev permit(address,address,uint256,uint256,uint8,bytes32,bytes32).
+    (bool success, ) = token.call(
+      abi.encodeWithSelector(
+        0xd505accf,
+        msg.sender,
+        address(this),
+        amount,
+        deadline,
+        v,
+        r,
+        s
+      )
+    );
+    require(success, "permit failed");
+  }
 }

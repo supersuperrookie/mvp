@@ -58,6 +58,7 @@ contract AMHOToken is ERC721PresetMinterPauserAutoId, Ownable {
     //   lockTime[tokenId] > block.timestamp || unlocked[tokenId],
     //   "AMHO item is locked bo"
     // );
+    require(to != 0x0, ")
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
