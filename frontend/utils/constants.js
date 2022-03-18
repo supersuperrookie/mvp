@@ -2,6 +2,8 @@
 export const Status = {
   NEW: 'NEW',
   PENDING: 'PENDING',
+  PENDING_INIT: 'PENDING_INIT',
+  PENDING_MATE: 'PENDING_MATE',
   SHIPPED: 'SHIPPED',
   MATED: 'MATED'
 }

@@ -13,16 +13,14 @@ const NavItems = [
     label: "E-SHOP",
     url: "/shop",
     active: false,
+  },
+  {
+    label: "Lit",
+    url: "/lit",
+    active: false,
   }
 ];
 
-const LoginButton = react.forwardRef(({ onClick, href }, ref) => {
-  return (
-    <a href={href} onClick={onClick} ref={ref}>
-      Login
-    </a>
-  );
-});
 const Navbar = () => {
   const router = useRouter();
   return (
