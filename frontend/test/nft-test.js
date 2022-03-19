@@ -42,12 +42,10 @@ describe("Contract Tests", function () {
     const dummyToken = await DummyToken.deploy();
     await dummyToken.deployed();
     // Set Token Addresses
-    console.log("Token deployed at: ", dummyToken.address);
 
     await escrow
       .connect(buyerAddress)
       .setTokenAddresses(nftAddress, dummyToken.address);
-    console.log("Escrow deployed at: ", escrow.address);
 
     // MINT NFT
 

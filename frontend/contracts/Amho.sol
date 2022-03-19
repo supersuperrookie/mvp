@@ -73,7 +73,9 @@ contract Amho is ERC721URIStorage {
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
         _setTokenURI(id, tokenURI);
+
         _tokenIds.increment();
+
         return id;
     }
 }
