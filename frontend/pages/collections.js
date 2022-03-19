@@ -50,12 +50,12 @@ const Collections = () => {
         <div className="flex justify-center">
           {item.status == Status.SHIPPED ? (
             <IconShipped status={Status.SHIPPED} />
-          ) : item.status == Status.MATED ? (
-            <IconTethered status={Status.MATED} />
+          ) : item.status == Status.TETHERED ? (
+            <IconTethered status={Status.TETHERED} />
           ) : item.status == Status.PENDING ||
             Status.PENDING_INIT ||
-            Status.PENDING_MATE ? (
-            <a onClick={handleQR}>
+            Status.PENDING_TETHER ? (
+            <a onClick={handleOpen}>
               <IconPending status={item.status} id={id} />
             </a>
           ) : (

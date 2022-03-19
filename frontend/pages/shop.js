@@ -7,22 +7,9 @@ import { LayoutMargin } from "../components/Layout";
 const dummyShopData = [
   {
     id: 0,
-    name: "AMHO BAG",
+    name: "MUDANG",
     status: Status.SHIPPED,
-    imageURI: "http://localhost:3000/image",
-    streamURI: "http://localhost:8080/image",
-    description:
-      "First leather bag created for ETHDenver 2022, built with pebble buffalo leather",
-    dimension: "9.5 / 4.5 / 7.5 inches",
-    material: "Pebble Grain Leather",
-    price: 1400,
-  },
-  {
-    id: 0,
-    name: "AMHO BAG",
-    status: Status.SHIPPED,
-    imageURI: "http://localhost:3000/image",
-    streamURI: "http://localhost:8080/image",
+    imageURI: "/bag1.mp4",
     description:
       "First leather bag created for ETHDenver 2022, built with pebble buffalo leather",
     dimension: "9.5 / 4.5 / 7.5 inches",
@@ -58,13 +45,21 @@ const ShopItem = ({ item, id }) => {
     <div className="cursor-pointer">
       <div>
         <a onClick={handlePageChange} key={id}>
-          <img src="/bagplaceholder2.png" alt="" />
+          <video 
+          src={item.imageURI}
+              // autoPlay
+              // loop
+              muted
+              height={600}
+              width={350}
+              type="video/mp4"
+          ></video>
         </a>
       </div>
       <div className="p-4">
         <div className="flex">
           <div>
-            <span className="text-xl font-bold">AMHO BAG</span>
+            <span className="text-xl font-bold">{item.name}</span>
           </div>
         </div>
         <div className="flex">

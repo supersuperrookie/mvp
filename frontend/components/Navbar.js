@@ -15,12 +15,16 @@ const NavItems = [
     active: false,
   },
   {
-    label: "Lit",
-    url: "/lit",
-    active: false,
+    label: "ADMIN",
+    url: "/admin",
+    active: false
   }
+  // {
+  //   label: "Lit",
+  //   url: "/lit",
+  //   active: false,
+  // }
 ];
-
 const Navbar = () => {
   const router = useRouter();
   return (

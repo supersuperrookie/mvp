@@ -1,8 +1,8 @@
+import "hardhat/console.sol";
 import "./Overrides/IERC20.sol";
 import "./Overrides/IERC721.sol";
 import "./Overrides/IERC721Receiver.sol";
 import "./Overrides/Ownable.sol";
-import "hardhat/console.sol";
 import "./Matic/ChildERC20.sol";
 
 contract Escrow is Ownable {
@@ -11,10 +11,8 @@ contract Escrow is Ownable {
     bool addressSet;
 
     enum EscrowOrderState {
-        depositedNFT,
-        depositedToken,
-        pendingMate,
-        mateSuccess
+        DEPOSITED_NFT,
+        DEPOSITED_TOKEN
     }
 
     struct EscrowOrder {
@@ -42,38 +40,42 @@ contract Escrow is Ownable {
         addressSet = true;
     }
 
-    function depositToken(uint256 _tokenId, uint256 amount) public {
+    function depositToken(address from, uint256 _tokenId, uint256 amount) external returns (bool) {
         require(addressSet, "Addresses not set");
-
         escrowById[_tokenId] = EscrowOrder({
-            buyer: payable(msg.sender),
+            buyer: payable(from),
             // seller: payable(seller),
             seller: payable(msg.sender),
-            status: EscrowOrderState.depositedToken,
+            status: EscrowOrderState.DEPOSITED_TOKEN,
             value: amount
         });
 
-        console.log("Sender from contract POV: ", msg.sender);
-
-console.log(amount);
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        console.log("Deposited from: ", from);
+        bool success = IERC20(token).transferFrom(from, address(this), amount);
 
         emit DepositedToken(msg.sender, amount);
         emit EscrowOrderInitiated(msg.sender, msg.sender, _tokenId);
+
+        return success;
+
     }
 
-    function depositNFT(uint256 _tokenId) public {
+    function depositNFT(address from, uint256 _tokenId) external returns(bool) {
         require(addressSet, "Addresses not set");
 
         address seller = IERC721(amho).ownerOf(_tokenId);
         EscrowOrder storage order = escrowById[_tokenId];
 
-        order.seller = payable(seller);
-        order.status = EscrowOrderState.depositedNFT;
+        console.log("Deposited from: ", from);
 
-        IERC721(amho).transferFrom(payable(seller), address(this), _tokenId);
+        order.seller = payable(from);
+        order.status = EscrowOrderState.DEPOSITED_NFT;
+
+        IERC721(amho).transferFrom(payable(from), address(this), _tokenId);
 
         emit DepositedNFT(seller, address(amho));
+
+        return true;
     }
 
     function releaseOrder(uint256 _tokenId) external {

@@ -2,8 +2,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 const dummyData = {
-  name: "AMHO BAG",
+  name: "MUDANG",
   owner: "did:id:1234",
+  imageURI: "/bag1.mp4",
   description:
     "First leather bag created for ETHDenver 2022, built with pebble buffalo leather",
   dimension: "9.5 / 4.5 / 7.5 inches",
@@ -15,7 +16,7 @@ function ShopItem() {
   const router = useRouter();
 
   // NOTE: This ID will be used to query the smart contract
-  
+
   const { id } = router.query;
   const [open, setOpen] = useState(false);
 
@@ -25,9 +26,18 @@ function ShopItem() {
   return (
     <>
       <div className="flex justify-center items-center h-screen">
-        <img className="flex-1 p-80" src="/bagplaceholder2.png" alt="" />
+        <video
+          className="flex-1 p-80"
+          src={dummyData.imageURI}
+          // autoPlay
+          // loop
+          muted
+          height={600}
+          width={350}
+          type="video/mp4"
+        />
         <div className="flex-1 p-20">
-          <div className="pb-5">
+          <div className="pb-10">
             <h1 className="text-8xl font-bold text-black">{dummyData.name}</h1>
             <h1 className="text-lg text-slate-300">Owner: {dummyData.owner}</h1>
           </div>
@@ -57,7 +67,7 @@ function ShopItem() {
       <PurchaseDialog
         open={open}
         handleOpen={handleOpen}
-        itemImage={"/bagplaceholder2.png"}
+        itemImage={"/bag1.mp4"}
       />
     </>
   );
@@ -71,11 +81,15 @@ function PurchaseDialog({ open, handleOpen, itemImage }) {
       <div class="2xl:container 2xl:mx-auto py-72 px-4 md:px-28 flex justify-center items-center">
         <div class="ring-2 ring-slate-800 w-96 md:w-auto dark:bg-slate-50 relative flex flex-col justify-center items-center bg-white py-16 px-4 md:px-24 xl:py-24 xl:px-36">
           <div className="">
-            <img
-              className={success ? "opacity-40" : ""}
-              src={itemImage}
-              alt=""
-            />
+            <video
+              src="/bag1.mp4"
+              autoPlay
+              loop
+              muted
+              height={600}
+              width={350}
+              type="video/mp4"
+            ></video>
           </div>
           <div class="mt-10">
             {success ? (

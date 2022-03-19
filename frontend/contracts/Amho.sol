@@ -10,24 +10,35 @@ import "./Overrides/ERC721URIStorage.sol";
 import "hardhat/console.sol";
 
 // Mint and Listing Contract
+library SharedStructs {
+
+    enum ItemState {
+        NEW,
+        PENDING_INIT,
+        PENDING_TETHER,
+        TETHERED
+    }
+
+    struct TetherState {
+        uint256 tokenId;
+        address tetheredOwner;
+        ItemState itemState;
+        bytes32 secret;
+    }
+}
 
 contract Amho is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     //
-    enum ItemState {
-        NEW,
-        PENDING,
-        PENDING_INIT,
-        PENDING_TETHER,
-        SHIPPED,
-        TETHERED
-    }
 
-    address public owner;
+    /**
+        NOTE: It has to match the following criteria:
+        1. 
+     */
 
-    mapping(uint256 => bytes32) idToSecret;
-    mapping(uint256 => bool) idToSecretStatus;
+
+    mapping(uint256 => SharedStructs.TetherState) public idToTetherData;
     mapping(uint256 => address) idToOwner;
 
     Escrow escrowContract;
@@ -41,38 +52,51 @@ contract Amho is ERC721URIStorage {
         escrowContract = Escrow(_escrowContractAddress);
     }
 
-    function getSecretById(uint256 _tokenId) public view returns (bytes32) {
-        return idToSecret[_tokenId];
-    }
-
-    function getSecretStatus(uint256 _tokenId) public view returns (bool) {
-        return idToSecretStatus[_tokenId];
-    }
 
     function unlockById(uint256 _tokenId, bytes32 _secret) public {
-        bytes32 secret = idToSecret[_tokenId];
+        bytes32 secret = idToTetherData[_tokenId].secret;
         require(secret == _secret, "Unauthorized");
         escrowContract.releaseOrder(_tokenId);
     }
 
+    function depositTokenToEscrow(uint256 _tokenId, uint256 _amount) public {
+        // require(escrowContract.depositToken(_tokenId, _amount), "Tokens were not able to be deposited");
+        escrowContract.depositToken(msg.sender, _tokenId, _amount);
+
+        // TODO: Change state
+
+    }
+
+    function depositNftToEscrow(uint256 _tokenId) public {
+        // require(escrowContract.depositNFT(_tokenId), "NFT was not able to be deposited");
+        escrowContract.depositNFT(msg.sender, _tokenId);
+
+        // TODO: Change state
+
+    }
+
     // TODO: Mint NFT with secret code
 
-    // function mintToken(bytes32 secret, string memory tokenURI) public payable returns (uint) {
     function mintToken(bytes32 secret, string memory tokenURI)
         public
         payable
         returns (uint256)
     {
-        _tokenIds.increment();
         uint256 id = _tokenIds.current();
 
-        idToSecret[id] = secret;
-        idToOwner[id] = msg.sender;
-        idToSecretStatus[id] = false;
+        // idToTetherData[id] = secret;
+        // idToOwner[id] = msg.sender;
+        idToTetherData[id] = SharedStructs.TetherState({
+            tokenId: id,
+            tetheredOwner: msg.sender,
+            itemState: SharedStructs.ItemState.NEW,
+            secret: secret
+        });
 
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
         _setTokenURI(id, tokenURI);
+        _tokenIds.increment();
         return id;
     }
 
