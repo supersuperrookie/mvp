@@ -2,6 +2,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 
 export const LayoutMargin = "mr-[540px] ml-[540px]"
+export const AntiLayoutMargin = "mr-[-540px] ml-[-540px]"
 
 const Layout = ({ children, walletAddress }) => {
   return (

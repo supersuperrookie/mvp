@@ -6,14 +6,12 @@ const pendingInitStyle = `h-10 w-10 text-red-600`;
 const pendingMateStyle = `h-10 w-10 text-blue-800`;
 
 const IconPending = ({ status, id }) => {
-  const [globalState, globalActions] = useGlobal();
   return (
     <div className="flex justify-center p-2">
       <a
         className="cursor-pointer"
         onClick={(e) => {
           e.preventDefault();
-          globalActions.ownedSetStatusPendingMate(id);
         }}
       >
         <svg

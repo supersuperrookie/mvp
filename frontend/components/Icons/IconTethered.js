@@ -1,4 +1,4 @@
-const IconMated = () => {
+const IconTethered = () => {
   return (
     <div className="flex justify-center p-2">
         <a className="cursor-pointer">
@@ -19,4 +19,4 @@ const IconMated = () => {
   );
 };
 
-export default IconMated;
+export default IconTethered;

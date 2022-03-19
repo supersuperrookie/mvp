@@ -1,7 +1,7 @@
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Overrides/IERC20.sol";
+import "./Overrides/IERC721.sol";
+import "./Overrides/IERC721Receiver.sol";
+import "./Overrides/Ownable.sol";
 import "hardhat/console.sol";
 
 contract Escrow is Ownable {
@@ -45,6 +45,7 @@ contract Escrow is Ownable {
         require(addressSet, "Addresses not set");
 
         address seller = IERC721(amho).ownerOf(_tokenId);
+
         escrowById[_tokenId] = EscrowOrder({
             buyer: payable(msg.sender),
             seller: payable(seller),
@@ -64,9 +65,12 @@ contract Escrow is Ownable {
 
         address seller = IERC721(amho).ownerOf(_tokenId);
         EscrowOrder storage order = escrowById[_tokenId];
+
         order.seller = payable(seller);
         order.status = EscrowOrderState.depositedNFT;
+
         IERC721(amho).transferFrom(payable(seller), address(this), _tokenId);
+
         emit DepositedNFT(seller, address(amho));
     }
 

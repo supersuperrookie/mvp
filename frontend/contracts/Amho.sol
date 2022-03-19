@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity 0.8.4; 
+pragma solidity ^0.8.0;
 
 import "./Escrow.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "./Overrides/ERC721.sol";
+import "./Overrides/IERC20.sol";
+import "./Overrides/IERC721.sol";
+import "./Overrides/Counters.sol";
+import "./Overrides/ERC721URIStorage.sol";
 import "hardhat/console.sol";
 
 // Mint and Listing Contract
@@ -14,6 +14,15 @@ import "hardhat/console.sol";
 contract Amho is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    //
+    enum ItemState {
+        NEW,
+        PENDING,
+        PENDING_INIT,
+        PENDING_TETHER,
+        SHIPPED,
+        TETHERED
+    }
 
     address public owner;
 
@@ -22,6 +31,7 @@ contract Amho is ERC721URIStorage {
     mapping(uint256 => address) idToOwner;
 
     Escrow escrowContract;
+
     // address escrowContractAddress;
 
     // constructor(address _escrowContractAddress) ERC721("AMHO", "AMHO") {
@@ -43,13 +53,16 @@ contract Amho is ERC721URIStorage {
         bytes32 secret = idToSecret[_tokenId];
         require(secret == _secret, "Unauthorized");
         escrowContract.releaseOrder(_tokenId);
-
     }
 
     // TODO: Mint NFT with secret code
 
     // function mintToken(bytes32 secret, string memory tokenURI) public payable returns (uint) {
-    function mintToken(bytes32 secret, string memory tokenURI) public payable returns (uint) {
+    function mintToken(bytes32 secret, string memory tokenURI)
+        public
+        payable
+        returns (uint256)
+    {
         _tokenIds.increment();
         uint256 id = _tokenIds.current();
 

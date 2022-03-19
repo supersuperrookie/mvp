@@ -1,0 +1,1 @@
+export const isLoaded = () => typeof window !== 'undefined'

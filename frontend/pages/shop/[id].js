@@ -13,10 +13,11 @@ const dummyData = {
 
 function ShopItem() {
   const router = useRouter();
+
+  // NOTE: This ID will be used to query the smart contract
+  
   const { id } = router.query;
   const [open, setOpen] = useState(false);
-
-  // TODO: UseEffect to reach out to backend to get ceramic query
 
   const handleOpen = () => {
     setOpen(!open);
