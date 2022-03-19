@@ -1,9 +1,9 @@
 const { ethers } = require("hardhat");
 const { randomBytes } = require("crypto");
-const { execSync } = require("child_process");
+const { expect } = require("chai");
 
 describe("Deploy and Deposit", function () {
-  it("Create NFT, Deposit token and NFT", async function () {
+  it("Create NFT, Deposit Token and NFT", async function () {
     const [buyerAddress] = await ethers.getSigners();
     secret = new Uint8Array(randomBytes(32));
 
@@ -60,10 +60,8 @@ describe("Deploy and Deposit", function () {
     const mintedId = await nft
       .connect(buyerAddress)
       .mintToken(hashedSecret, "https://amho.xyz");
-    
-    const ownerOf = await nft.ownerOf(mintedId.value);
 
-
+    expect(mintedId).to.equal(0);
     // Approve Spend to Contract Address
 
     // await matic.connect(buyerAddress).approve(escrowAddress, cost);
@@ -71,8 +69,6 @@ describe("Deploy and Deposit", function () {
     // Deposit token to escrow address
 
     await dummyToken.mintTo(buyerAddress.address);
-    await dummyToken.connect(buyerAddress).approve(escrowAddress, cost)
-
     await dummyToken.connect(buyerAddress).approve(nftAddress, cost);
     await dummyToken.connect(buyerAddress).approve(escrowAddress, cost);
 
