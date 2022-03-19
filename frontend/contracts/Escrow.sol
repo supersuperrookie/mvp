@@ -3,6 +3,7 @@ import "./Overrides/IERC721.sol";
 import "./Overrides/IERC721Receiver.sol";
 import "./Overrides/Ownable.sol";
 import "hardhat/console.sol";
+import "./Matic/ChildERC20.sol";
 
 contract Escrow is Ownable {
     address amho;
@@ -30,34 +31,35 @@ contract Escrow is Ownable {
 
     // TODO: Add statuses to each EscrowOrderState
 
+    event Received(address, uint);
     event EscrowOrderInitiated(address indexed buyer, address seller, uint tokenId);
     event DepositedNFT(address indexed seller, address tokenAddress);
     event DepositedToken(address indexed buyer, uint amount);
 
-    function setTokenAddresses(address _amho) public {
+    function setTokenAddresses(address _amho, address _token) public {
         amho = _amho;
-        token = 0x0000000000000000000000000000000000001010;
-
+        token = _token;
         addressSet = true;
     }
 
     function depositToken(uint256 _tokenId, uint256 amount) public {
         require(addressSet, "Addresses not set");
 
-        address seller = IERC721(amho).ownerOf(_tokenId);
-
         escrowById[_tokenId] = EscrowOrder({
             buyer: payable(msg.sender),
-            seller: payable(seller),
+            // seller: payable(seller),
+            seller: payable(msg.sender),
             status: EscrowOrderState.depositedToken,
             value: amount
         });
 
+        console.log("Sender from contract POV: ", msg.sender);
+
+console.log(amount);
         IERC20(token).transferFrom(msg.sender, address(this), amount);
-        console.log("Transferring coins to", address(this));
 
         emit DepositedToken(msg.sender, amount);
-        emit EscrowOrderInitiated(msg.sender, seller, _tokenId);
+        emit EscrowOrderInitiated(msg.sender, msg.sender, _tokenId);
     }
 
     function depositNFT(uint256 _tokenId) public {
@@ -84,5 +86,9 @@ contract Escrow is Ownable {
         IERC721(amho).transferFrom(address(this), _buyer, _tokenId);
         IERC20(token).transfer(_seller, _value);
         delete escrowById[_tokenId];
+    }
+
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
     }
 }

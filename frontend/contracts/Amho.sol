@@ -32,13 +32,13 @@ contract Amho is ERC721URIStorage {
 
     Escrow escrowContract;
 
-    // address escrowContractAddress;
+    address payable escrowContractAddress;
 
-    // constructor(address _escrowContractAddress) ERC721("AMHO", "AMHO") {
-    constructor() ERC721("AMHO", "AMHO") {
+    constructor(address payable _escrowContractAddress) ERC721("AMHO", "AMHO") {
+    // constructor() ERC721("AMHO", "AMHO") {
         // owner = payable(msg.sender);
-        // escrowContractAddress = _escrowContractAddress;
-        // escrowContract = Escrow(_escrowContractAddress);
+        escrowContractAddress = payable(_escrowContractAddress);
+        escrowContract = Escrow(_escrowContractAddress);
     }
 
     function getSecretById(uint256 _tokenId) public view returns (bytes32) {
@@ -70,7 +70,7 @@ contract Amho is ERC721URIStorage {
         idToOwner[id] = msg.sender;
         idToSecretStatus[id] = false;
 
-        setApprovalForAll(address(escrowContract), true);
+        setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
         _setTokenURI(id, tokenURI);
         return id;
