@@ -63,18 +63,17 @@ contract Amho is ERC721URIStorage {
         payable
         returns (uint256)
     {
-        _tokenIds.increment();
         uint256 id = _tokenIds.current();
 
         idToSecret[id] = secret;
         idToOwner[id] = msg.sender;
         idToSecretStatus[id] = false;
 
+
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
         _setTokenURI(id, tokenURI);
+        _tokenIds.increment();
         return id;
     }
-
-    // TODO: Build Listing Contract
 }

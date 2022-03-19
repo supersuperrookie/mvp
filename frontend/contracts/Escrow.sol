@@ -4,6 +4,7 @@ import "./Overrides/IERC721Receiver.sol";
 import "./Overrides/Ownable.sol";
 import "hardhat/console.sol";
 import "./Matic/ChildERC20.sol";
+import "./Amho.sol";
 
 contract Escrow is Ownable {
     address amho;
@@ -45,17 +46,20 @@ contract Escrow is Ownable {
     function depositToken(uint256 _tokenId, uint256 amount) public {
         require(addressSet, "Addresses not set");
 
+        // Get the seller of the NFT
+        // address seller = IERC721(amho).ownerOf(_tokenId);
+
+        // Build the escrow order
+
         escrowById[_tokenId] = EscrowOrder({
             buyer: payable(msg.sender),
+            // NOTE: Cannot be the 0x0 address
             // seller: payable(seller),
             seller: payable(msg.sender),
             status: EscrowOrderState.depositedToken,
             value: amount
         });
 
-        console.log("Sender from contract POV: ", msg.sender);
-
-console.log(amount);
         IERC20(token).transferFrom(msg.sender, address(this), amount);
 
         emit DepositedToken(msg.sender, amount);
@@ -65,15 +69,20 @@ console.log(amount);
     function depositNFT(uint256 _tokenId) public {
         require(addressSet, "Addresses not set");
 
-        address seller = IERC721(amho).ownerOf(_tokenId);
-        EscrowOrder storage order = escrowById[_tokenId];
+        // address seller = Amho(amho).ownerOf(_tokenId);
 
-        order.seller = payable(seller);
-        order.status = EscrowOrderState.depositedNFT;
+        // EscrowOrder storage order = escrowById[_tokenId];
 
-        IERC721(amho).transferFrom(payable(seller), address(this), _tokenId);
+        // if (order.seller != seller) {
+        //     order.seller = payable(seller);
+        // }
 
-        emit DepositedNFT(seller, address(amho));
+        // order.status = EscrowOrderState.depositedNFT;
+
+        // NOTE: Cannot be the msg.sender !== from address 
+        Amho(amho).transferFrom(msg.sender, address(this), _tokenId);
+
+        emit DepositedNFT(msg.sender, address(amho));
     }
 
     function releaseOrder(uint256 _tokenId) external {

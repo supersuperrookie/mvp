@@ -1,5 +1,6 @@
 const { ethers } = require("hardhat");
 const { randomBytes } = require("crypto");
+const { execSync } = require("child_process");
 
 describe("Contract Tests", function () {
   it("Create NFT and deposit it", async function () {
@@ -50,28 +51,29 @@ describe("Contract Tests", function () {
 
     // MINT NFT
 
-    const cost = "1";
+    const cost = ethers.BigNumber.from(1);
 
     const mintedId = await nft
       .connect(buyerAddress)
       .mintToken(hashedSecret, "https://amho.xyz");
+    
+    const ownerOf = await nft.ownerOf(mintedId.value);
+
 
     // Approve Spend to Contract Address
 
-    // await matic.connect(buyerAddress).approve(escrowAddress, ethers.utils.parseUnits(cost));
+    // await matic.connect(buyerAddress).approve(escrowAddress, cost);
 
     // Deposit token to escrow address
 
     await dummyToken.mintTo(buyerAddress.address);
+    await dummyToken.connect(buyerAddress).approve(escrowAddress, cost)
 
-    const balanceOfSender = await dummyToken.balanceOf(buyerAddress.address);
-    const balanceOfEscrow = await dummyToken.balanceOf(escrowAddress);
-
-    console.log("Balance of sender: ", balanceOfSender);
-    const value = BigNumber.from("1000000000000000000");
     await escrow
       .connect(buyerAddress)
-      .depositToken(mintedId.value, ethers.utils.formatUnits(value, "gwei"));
-    console.log("Balance of escrow: ", balanceOfEscrow);
+      .depositToken(mintedId.value, cost);
+
+
+    await escrow.connect(buyerAddress).depositNFT(mintedId.value);
   });
 });
