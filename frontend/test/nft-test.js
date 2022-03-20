@@ -68,16 +68,16 @@ describe("Escrow Deposit Flow", function () {
       expect(await dummyToken.balanceOf(escrowAddress)).to.equal(1);
       expect(await nft.ownerOf(mintedId.value)).to.equal(escrowAddress);
 
-      const result = await nft.getTetheredData(mintedId.value);
+      const result = await nft.getNFTState(mintedId.value);
 
       // NOTE: Struct tests
 
-      expect(result["tetheredOwner"]).to.equal(sellerAddress.address);
+      expect(result["currentOwner"]).to.equal(sellerAddress.address);
       expect(result["secret"]).to.equal(hashedSecret);
       expect(result["itemState"]).to.equal(0);
     });
 
-    it("Release NFT from escrow and update structs", async () => {
+    it("Release NFT from escrow and ensure the buyer and seller get their stuff", async () => {
       // TODO: Move cost into the function and compare with msg.value
 
       await nft.connect(buyerAddress).depositTokenToEscrow(mintedTokenId, cost);
@@ -85,12 +85,14 @@ describe("Escrow Deposit Flow", function () {
 
       const result = await escrow.getEscrowOrderById(mintedTokenId);
 
-      console.log("Secret from test: ", secret);
-      await nft.connect(buyerAddress).releaseOrderToEscrow(sellerAddress.address, mintedTokenId, secret);
+      const retTokenId = await nft.connect(buyerAddress).releaseOrderToEscrow(mintedTokenId, hashedSecret);
 
       expect(result["seller"]).to.equal(sellerAddress.address);
       expect(result["buyer"]).to.equal(buyerAddress.address);
 
+      const sellerBal = await dummyToken.balanceOf(sellerAddress.address);
+      expect(sellerBal).to.equal(11);
+      expect(await nft.ownerOf(retTokenId.value)).to.equal(buyerAddress.address);
       // TODO: QR Scanned
 
     });

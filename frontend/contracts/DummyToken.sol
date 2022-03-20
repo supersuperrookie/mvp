@@ -4,10 +4,10 @@ import './Overrides/ERC20.sol';
 
 contract DummyToken is ERC20 {
     constructor() public ERC20("NAME", "SYMBOL") {
-        _mint(msg.sender, 1000);
+        // _mint(msg.sender, 1000);
     }
 
     function mintTo(address recipient) public {
-        _mint(recipient, 1000);
+        _mint(recipient, 10);
     }
 }
