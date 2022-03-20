@@ -25,13 +25,9 @@ contract Escrow is Ownable {
 
     // Token ID to get order buyer, seller, and status
 
-    mapping(uint256 => EscrowOrder) public escrowById;
-    mapping(uint256 => address) public idToOwner;
-
-    // TODO: Add statuses to each EscrowOrderState
+    mapping(uint256 => EscrowOrder) public escrowOrderById;
 
     event Received(address, uint);
-    event EscrowOrderInitiated(address indexed buyer, address seller, uint tokenId);
     event DepositedNFT(address indexed seller, address tokenAddress);
     event DepositedToken(address indexed buyer, uint amount);
 
@@ -41,22 +37,27 @@ contract Escrow is Ownable {
         addressSet = true;
     }
 
+
+    function getEscrowOrderById(uint256 _tokenId) public view returns (EscrowOrder memory) {
+        return escrowOrderById[_tokenId];
+    }
+
     function depositToken(address from, uint256 _tokenId, uint256 amount) external returns (bool) {
         require(addressSet, "Addresses not set");
-        escrowById[_tokenId] = EscrowOrder({
+        Amho _amho = Amho(amho);
+
+        address seller = _amho.ownerOf(_tokenId);
+
+        escrowOrderById[_tokenId] = EscrowOrder({
             buyer: payable(from),
-            // seller: payable(seller),
-            seller: payable(msg.sender),
+            seller: payable(seller),
             status: EscrowOrderState.DEPOSITED_TOKEN,
             value: amount
         });
 
-        console.log("Deposited from: ", from);
         bool success = IERC20(token).transferFrom(from, address(this), amount);
 
         emit DepositedToken(msg.sender, amount);
-        emit EscrowOrderInitiated(msg.sender, msg.sender, _tokenId);
-
         return success;
 
     }
@@ -66,13 +67,13 @@ contract Escrow is Ownable {
 
         // address seller = Amho(amho).ownerOf(_tokenId);
         address seller = IERC721(amho).ownerOf(_tokenId);
-        EscrowOrder storage order = escrowById[_tokenId];
+        EscrowOrder storage order = escrowOrderById[_tokenId];
 
-        console.log("Deposited from: ", from);
 
         order.seller = payable(from);
         order.status = EscrowOrderState.DEPOSITED_NFT;
 
+        // IERC721(amho).transferFrom(payable(from), order.buyer, _tokenId);
         IERC721(amho).transferFrom(payable(from), address(this), _tokenId);
 
         emit DepositedNFT(seller, address(amho));
@@ -80,8 +81,8 @@ contract Escrow is Ownable {
         return true;
     }
 
-    function releaseOrder(uint256 _tokenId) external {
-        EscrowOrder memory escrowOrder = escrowById[_tokenId];
+    function releaseOrder(uint256 _tokenId, bytes32 _secret) external secretMatch(_tokenId, _secret) {
+        EscrowOrder memory escrowOrder = escrowOrderById[_tokenId];
 
         address _buyer = escrowOrder.buyer;
         address _seller = escrowOrder.seller;
@@ -89,10 +90,18 @@ contract Escrow is Ownable {
 
         IERC721(amho).transferFrom(address(this), _buyer, _tokenId);
         IERC20(token).transfer(_seller, _value);
-        delete escrowById[_tokenId];
+
+        delete escrowOrderById[_tokenId];
     }
 
     receive() external payable {
         emit Received(msg.sender, msg.value);
+    }
+
+    modifier secretMatch(uint256 _tokenId, bytes32 _secret) {
+        Amho _amho = Amho(amho);
+        bytes32 secret = _amho.getSecret(_tokenId);
+        require(secret == _secret, "Unauthorized");
+        _;
     }
 }

@@ -22,7 +22,8 @@ module.exports = {
     mumbai: {
       url: "https://matic-mumbai--jsonrpc.datahub.figment.io/apikey/03406ca0bd1f730425fe52737c108fca/",
       accounts: [
-        process.env.PRIVATE_KEY
+        process.env.PRIVATE_KEY_SELLER,
+        process.env.PRIVATE_KEY_BUYER
       ]
     }
   },
