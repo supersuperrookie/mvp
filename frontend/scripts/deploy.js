@@ -3,7 +3,8 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
+const fs = require("fs");
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -12,18 +13,35 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile
   // manually to make sure everything is compiled
   // await hre.run('compile');
+  const [signer] = await ethers.getSigners();
+  const mumbaiMaticAddress = ethers.utils.getAddress("0x0000000000000000000000000000000000001010")
 
-  // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const Escrow = await ethers.getContractFactory("Escrow");
+  escrow = await Escrow.deploy();
+  await escrow.deployed();
 
-  await greeter.deployed();
+  const NFT = await ethers.getContractFactory("Amho");
+  nft = await NFT.deploy(ethers.utils.getAddress(escrow.address));
+  await nft.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("AMHO deployed to: ", nft.address);
+
+  await escrow
+    .connect(signer)
+    .setTokenAddresses(nft.address, mumbaiMaticAddress);
+
+  console.log("Escrow deployed to: ", escrow.address);
+
+  fs.writeFileSync(
+    "./config.js",
+    `export const escrowAddress = "${escrow.address}"
+    export const nftAddress = "${nft.address}"`
+  );
 }
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
+
 main()
   .then(() => process.exit(0))
   .catch((error) => {

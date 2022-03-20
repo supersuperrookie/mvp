@@ -250,4 +250,14 @@ contract Amho is ERC721URIStorage {
 
         return inMemPendingItems;
     }
+
+    // NOTE: Functions for Lit Protocol 
+
+    function getCurrentOwner(uint256 _tokenId) public view returns(address) {
+        return idToNFTState[_tokenId].currentOwner;
+    }
+
+    function getNextOwner(uint256 _tokenId) public view returns(address) {
+        return idToNFTState[_tokenId].nextOwner;
+    }
 }

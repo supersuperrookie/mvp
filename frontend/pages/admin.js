@@ -1,22 +1,42 @@
 import { LayoutMargin } from "../components/Layout";
 import { useEffect, useState } from "react";
-import { webClient, getRecord } from "../utils/withIdentity";
+import Amho from "../artifacts/contracts/Amho.sol/Amho.json";
+// import { webClient, getRecord } from "../utils/withIdentity";
 
+// NOTE: Pseudo secret for now
 
+import { randomBytes } from "crypto";
 
-
+import { create } from "ipfs-http-client";
+import { ethers } from "ethers";
 import { CeramicClient } from "@ceramicnetwork/http-client";
-import { getResolver, createNftDidUrl} from "nft-did-resolver";
+import { getResolver, createNftDidUrl } from "nft-did-resolver";
 import { Resolver } from "did-resolver";
 
+import { escrowAddress, nftAddress } from "../config";
+
+const client = create("https://ipfs.infura.io:5001/api/v0");
+
+const preloadMintData = {
+  name: "MUDANG",
+  imageURI: undefined,
+  description:
+    "First leather bag created for ETHDenver 2022, built with pebble buffalo leather",
+  dimension: "9.5 / 4.5 / 7.5 inches",
+  material: "Pebble Grain Leather",
+  price: 1,
+  secretStream: 'https://amho.xyz',
+};
+
 const didNFT = createNftDidUrl({
-  chainId: 'eip155:80001',
-  namespace: 'erc721',
-  contract: '0x454314f720bbb4508a29b9eae7d8f75838867da7',
-  tokenId: '1',
-})
+  chainId: "eip155:80001",
+  namespace: "erc721",
+  contract: "0x454314f720bbb4508a29b9eae7d8f75838867da7",
+  tokenId: "1",
+});
+
 const run = async (ceramic) => {
-  console.log(didNFT)
+  console.log(didNFT);
   const config = {
     ceramic,
     chains: {
@@ -38,16 +58,113 @@ const run = async (ceramic) => {
 };
 const Admin = () => {
   const [ceramic, setCeramic] = useState(null);
-  useEffect(() => {
-    const API_URL = "https://ceramic-clay.3boxlabs.com";
-    const ceramic = new CeramicClient(API_URL);
-    setCeramic(ceramic);
-  }, []);
+  const [signer, setSigner] = useState(null);
+  const [imageFileUrl, setImageFileUrl] = useState(null);
+  const [secretStream, setSecretSTream] = useState(undefined);
+
+  const [metadataUrl, setMetadataUrl] = useState(null);
+  const [metadata, setMetadata] = useState({
+    ...preloadMintData,
+  });
+
+  if (typeof window !== 'undefined') {
+    useEffect(() => {
+      const API_URL = "https://ceramic-clay.3boxlabs.com";
+      const ceramic = new CeramicClient(API_URL);
+      setCeramic(ceramic);
+
+    }, []);
+  }
+
+  const encryptSecret = async () => {
+
+  };
+
+  const imageUpload = async (e) => {
+    const file = e.target.files[0];
+    try {
+      const added = await client.add(file, {
+        progress: (prog) => console.log(`received: ${prog}`),
+      });
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      console.log(url);
+      setImageFileUrl(url);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
+  const metadataUpload = async () => {
+    const {
+      name,
+      description,
+      dimension,
+      material,
+      price,
+      imageURI = imageFileUrl,
+      secretStream,
+    } = metadata;
+
+    const data = JSON.stringify({
+      name,
+      description,
+      dimension,
+      material,
+      price,
+      imageURI,
+      secretStream,
+    });
+
+    try {
+      const added = await client.add(data);
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      setMetadataUrl(url);
+      return url;
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
+  const mintNft = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const signer = provider.getSigner();
+
+    let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
+    
+    // TODO: Change to VRF when you get the chance 
+
+    let secret = new Uint8Array(randomBytes(32));
+    let hashedSecret = ethers.utils.solidityKeccak256(["bytes32"], [secret]);
+
+    const metadataURI = await metadataUpload();
+    const price = ethers.BigNumber.from(metadata.price);
+
+    let tx = await amhoContract.mintToken(hashedSecret, metadataURI, price)
+    await tx.wait();
+  };
+
   return (
     <div className={LayoutMargin}>
       <div className="pb-20">
-        <h1 className="text-8xl font-bold text-slate-200">MINT</h1>
-        <button onClick={() => run(ceramic)}>Test</button>
+        <div>
+          <h1 className="text-8xl font-bold text-slate-200">MINT</h1>
+        </div>
+
+        <div className="pt-5">
+          {imageFileUrl && (
+            <video src={imageFileUrl} height={800} width={400} autoPlay />
+          )}
+          <input type="file" name="Asset" onChange={imageUpload} />
+        </div>
+
+        <div>
+          <button
+            onClick={mintNft}
+            class="w-full focus:ring-4 ring-slate-800 ring-2 dark:text-gray-800 dark:bg-slate-50 sm:w-auto mt-14 text-base leading-4 text-center text-white py-6 px-16 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 bg-gray-800"
+          >
+            MINT
+          </button>
+        </div>
       </div>
     </div>
   );
