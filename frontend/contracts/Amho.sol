@@ -9,7 +9,6 @@ import "./Overrides/Counters.sol";
 import "./Overrides/ERC721URIStorage.sol";
 import "hardhat/console.sol";
 
-// Mint and Listing Contract
 contract Amho is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -46,6 +45,10 @@ contract Amho is ERC721URIStorage {
         escrowContract = Escrow(_escrowContractAddress);
     }
 
+    function getPrice(uint256 _tokenId) public view returns (uint256) {
+        return getNFTState(_tokenId).price;
+    }
+
     function getNFTState(uint256 _tokenId)
         public
         view
@@ -57,12 +60,6 @@ contract Amho is ERC721URIStorage {
     function getSecret(uint256 _tokenId) external view returns (bytes32) {
         NFTState memory orderState = getNFTState(_tokenId);
         return orderState.secret;
-    }
-
-    function unlockById(uint256 _tokenId, bytes32 _secret) public {
-        bytes32 secret = idToNFTState[_tokenId].secret;
-        require(secret == _secret, "Unauthorized");
-        escrowContract.releaseOrder(_tokenId, _secret);
     }
 
     // TODO: Price match between the price of the minted token and msg.value
@@ -85,7 +82,7 @@ contract Amho is ERC721URIStorage {
         );
 
         NFTState storage nftState = idToNFTState[_tokenId];
-        if(nftState.currentOwner != msg.sender) {
+        if (nftState.currentOwner != msg.sender) {
             nftState.currentOwner = msg.sender;
         }
         nftState.itemState = ItemState.PENDING_TETHER;
@@ -102,6 +99,25 @@ contract Amho is ERC721URIStorage {
         return retTokenId;
     }
 
+    // Oracle to run. Yeah yeah I know. This is expensive.
+
+    function gasOpOracleCheckUntethered() public {
+        uint256 itemCount = _tokenIds.current();
+        for (uint256 i; i < itemCount; i++) {
+            NFTState memory localState = getNFTState(i);
+            // NFTState storage state = idToNFTState[i];
+            address possibleOwner = ownerOf(i);
+            address currOwner = localState.currentOwner;
+            address nextOwner = localState.nextOwner;
+
+            if (possibleOwner != currOwner || possibleOwner != nextOwner) {
+                localState.itemState = ItemState.UNTETHERED;
+            }
+            idToNFTState[i] = localState;
+        }
+    }
+
+
     function mintToken(
         bytes32 secret,
         string memory tokenURI,
@@ -111,6 +127,7 @@ contract Amho is ERC721URIStorage {
 
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
+
         idToNFTState[id] = NFTState({
             price: _price,
             tokenId: id,
