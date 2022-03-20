@@ -2,16 +2,18 @@ const { ethers } = require("hardhat");
 const { randomBytes } = require("crypto");
 const { expect } = require("chai");
 
-const Artifact = require("../artifacts/@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol/LinkTokenInterface.json");
+const LinkArtifact = require("../artifacts/@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol/LinkTokenInterface.json");
 
-const LinkTokenABI = Artifact.abi;
+const LinkTokenABI = LinkArtifact.abi;
 
-describe("Escrow Deposit Flow", function () {
+describe.only("Escrow Deposit Flow", function () {
   beforeEach(async () => {
     [sellerAddress, buyerAddress] = await ethers.getSigners();
     secret = new Uint8Array(randomBytes(32));
 
     hashedSecret = ethers.utils.solidityKeccak256(["bytes32"], [secret]);
+    hashedSecret1 = ethers.utils.solidityKeccak256(["bytes32"], [secret]);
+
     decimals = ethers.utils.solidityPack(["uint8"], [18]);
 
     const Escrow = await ethers.getContractFactory("Escrow");
@@ -130,9 +132,50 @@ describe("Escrow Deposit Flow", function () {
 
     expect(result.itemState).to.equal(4);
   });
+
+  it("Fetch owned items", async () => {
+      const ownedItems = await nft.connect(sellerAddress).fetchOwned();
+      expect(ownedItems).to.have.lengthOf(1);
+  })
+
+  it("Fetch pending_init items", async () => {
+    await dummyToken.connect(buyerAddress).approve(escrowAddress, cost);
+    await nft.connect(buyerAddress).depositTokenToEscrow(mintedTokenId, cost);
+
+    const pendingInitItems = await nft.connect(sellerAddress).fetchPendingInitOrders();
+    expect(pendingInitItems).to.have.lengthOf(1);
+  })
+
+  it("Fetch pending_tether items", async () => {
+      await nft.connect(buyerAddress).depositTokenToEscrow(mintedTokenId, cost);
+      await nft.connect(sellerAddress).depositNftToEscrow(mintedTokenId);
+      const pendingTetherItems = await nft.connect(buyerAddress).fetchPendingTether();
+      expect(pendingTetherItems).to.have.lengthOf(1);
+  })
+
+  it("Fetch on sale items", async () => {
+
+    await nft
+      .connect(sellerAddress)
+      .mintToken(hashedSecret, "https://amho.xyz", cost);
+    await nft
+      .connect(sellerAddress)
+      .mintToken(hashedSecret, "https://amho.xyz", cost);
+    await nft
+      .connect(sellerAddress)
+      .mintToken(hashedSecret, "https://amho.xyz", cost);
+
+    const onSaleItems = await nft.fetchOnSale();
+
+    // Length of 4 because beforeEach runs a mint also
+
+    expect(onSaleItems).to.have.lengthOf(4);
+  })
+
 });
 
-describe.only("LINK test", async () => {
+
+describe("LINK test", async () => {
   it("Get random number for QR Code", async () => {
     const VRFConsumer = await ethers.getContractFactory("VRFConsumer");
     vrfConsumer = await VRFConsumer.deploy();
@@ -159,7 +202,7 @@ describe.only("LINK test", async () => {
 
     const result = await vrfConsumer.randomResult();
     console.log("result: ", new ethers.BigNumber.from(result._hex).toString());
-    await new Promise(resolve => setTimeout(resolve, 60000));
+    await new Promise(resolve => setTimeout(resolve, 80000));
     const finalResult = await vrfConsumer.getRandomResult();
     console.log(finalResult);
   });

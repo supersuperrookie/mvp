@@ -36,7 +36,6 @@ contract Amho is ERC721URIStorage {
     Escrow escrowContract;
 
     mapping(uint256 => NFTState) idToNFTState;
-    mapping(uint256 => address) idToOwner;
 
     constructor(address payable _escrowContractAddress) ERC721("AMHO", "AMHO") {
         // constructor() ERC721("AMHO", "AMHO") {
@@ -117,7 +116,6 @@ contract Amho is ERC721URIStorage {
         }
     }
 
-
     function mintToken(
         bytes32 secret,
         string memory tokenURI,
@@ -128,6 +126,7 @@ contract Amho is ERC721URIStorage {
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
 
+
         idToNFTState[id] = NFTState({
             price: _price,
             tokenId: id,
@@ -137,10 +136,118 @@ contract Amho is ERC721URIStorage {
             secret: secret
         });
 
+        _tokenIds.increment();
         _setTokenURI(id, tokenURI);
 
-        _tokenIds.increment();
 
         return id;
+    }
+
+    // NOTE: Fetch Owned NFTs
+
+    function fetchOnSale() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 ownedCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (idToNFTState[i].itemState == ItemState.NEW) {
+                ownedCount++;
+            }
+        }
+
+        NFTState[] memory inMemItems = new NFTState[](ownedCount);
+
+        for (uint256 i = 0; i < ownedCount; i++) {
+            if (idToNFTState[i].currentOwner == msg.sender) {
+                uint256 currentId = idToNFTState[i].tokenId;
+                NFTState storage currentItem = idToNFTState[currentId];
+                inMemItems[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+
+        return inMemItems;
+    }
+
+    function fetchOwned() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 ownedCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (idToNFTState[i].currentOwner == msg.sender) {
+                ownedCount++;
+            }
+        }
+
+        NFTState[] memory inMemOwnedItems = new NFTState[](ownedCount);
+
+        for (uint256 i = 0; i < ownedCount; i++) {
+            if (idToNFTState[i].currentOwner == msg.sender) {
+                uint256 currentId = idToNFTState[i].tokenId;
+                NFTState storage currentItem = idToNFTState[currentId];
+                inMemOwnedItems[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+
+        return inMemOwnedItems;
+    }
+
+    // NOTE: PENDING_INIT
+
+    function fetchPendingInitOrders() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 pendingInitCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (idToNFTState[i].itemState == ItemState.PENDING_INIT && idToNFTState[i].currentOwner == msg.sender) {
+                pendingInitCount++;
+            }
+        }
+
+        NFTState[] memory inMemPendingItems = new NFTState[](pendingInitCount);
+
+        for (uint256 i = 0; i < pendingInitCount; i++) {
+            uint256 currentId = idToNFTState[i].tokenId;
+            NFTState storage currentItem = idToNFTState[currentId];
+            inMemPendingItems[currentIndex] = currentItem;
+            currentIndex++;
+        }
+        return inMemPendingItems;
+    }
+
+    // NOTE: PENDING_TETHER Case in which just minted or just bought
+
+    function fetchPendingTether() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 pendingTetherCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (
+                (idToNFTState[i].itemState == ItemState.PENDING_TETHER && idToNFTState[i].nextOwner == msg.sender) ||
+                idToNFTState[i].nextOwner == address(0)
+            ) {
+                pendingTetherCount++;
+            }
+        }
+
+        NFTState[] memory inMemPendingItems = new NFTState[](
+            pendingTetherCount
+        );
+
+        for (uint256 i = 0; i < pendingTetherCount; i++) {
+            if (idToNFTState[i].currentOwner == msg.sender) {
+                uint256 currentId = idToNFTState[i].tokenId;
+                NFTState storage currentItem = idToNFTState[currentId];
+                inMemPendingItems[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+
+        return inMemPendingItems;
     }
 }
