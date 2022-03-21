@@ -143,7 +143,7 @@ contract Amho is ERC721URIStorage {
         return id;
     }
 
-    // NOTE: Fetch Owned NFTs
+    // NOTE: Fetch On Sale
 
     function fetchOnSale() public view returns (NFTState[] memory) {
         uint256 totalCount = _tokenIds.current();
@@ -159,7 +159,7 @@ contract Amho is ERC721URIStorage {
         NFTState[] memory inMemItems = new NFTState[](ownedCount);
 
         for (uint256 i = 0; i < ownedCount; i++) {
-            if (idToNFTState[i].currentOwner == msg.sender) {
+            if (idToNFTState[i].itemState == ItemState.NEW) {
                 uint256 currentId = idToNFTState[i].tokenId;
                 NFTState storage currentItem = idToNFTState[currentId];
                 inMemItems[currentIndex] = currentItem;
@@ -169,6 +169,8 @@ contract Amho is ERC721URIStorage {
 
         return inMemItems;
     }
+
+    // NOTE: Fetch Owned
 
     function fetchOwned() public view returns (NFTState[] memory) {
         uint256 totalCount = _tokenIds.current();

@@ -1,3 +1,3 @@
-export const escrowAddress = "0xeb5d4dcF4CcE6601F5aaAc99b5Ef7d92633A0933"
-export const nftAddress = "0x22C8EffC4D0f1CdB38786c87AB550147A1F52d09"
-    
+export const escrowAddress = "0x488af1316D75F086DBAC87a7F9547239cff754Af"
+export const nftAddress = "0x080B20424298017f50b0Ef47D35aC62A5096Fd71"
+export const maticAddress = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1"

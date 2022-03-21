@@ -15,6 +15,7 @@
     "@self.id/core": "^0.3.0",
     "@self.id/image-utils": "^0.2.0",
     "@self.id/web": "^0.3.0",
+    "axios": "^0.26.1",
     "did-resolver": "^3.1.5",
     "fs": "^0.0.1-security",
     "ipfs-http-client": "^56.0.1",

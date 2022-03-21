@@ -1,9 +1,8 @@
 import { Status } from "../../utils/constants";
 import { useGlobal } from "../../utils/global-state";
 
-const pendingStyle = `h-10 w-10 text-slate-200 hover:text-gray-800`;
-const pendingInitStyle = `h-10 w-10 text-red-600`;
-const pendingMateStyle = `h-10 w-10 text-blue-800`;
+const pendingInitStyle = `h-10 w-10 text-slate-200 hover:text-gray-800`;
+const pendingTetherStyle = `h-10 w-10 text-gray-800`;
 
 const IconPending = ({ status, id }) => {
   return (
@@ -17,11 +16,9 @@ const IconPending = ({ status, id }) => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={
-            status === Status.PENDING
-              ? pendingStyle
-              : status === Status.PENDING_INIT
+              status == 1
               ? pendingInitStyle
-              : pendingMateStyle
+              : pendingTetherStyle
           }
           viewBox="0 0 20 20"
           fill="currentColor"

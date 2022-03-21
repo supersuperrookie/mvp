@@ -1,10 +1,10 @@
-const IconTethered = () => {
+const IconUntethered = () => {
   return (
     <div className="flex justify-center">
         <a className="cursor-pointer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-10 w-10 text-gray-800"
+            class="h-10 w-10 text-red-600"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -19,4 +19,4 @@ const IconTethered = () => {
   );
 };
 
-export default IconTethered;
+export default IconUntethered;
