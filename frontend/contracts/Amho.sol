@@ -126,7 +126,6 @@ contract Amho is ERC721URIStorage {
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
 
-
         idToNFTState[id] = NFTState({
             price: _price,
             tokenId: id,
@@ -138,7 +137,6 @@ contract Amho is ERC721URIStorage {
 
         _tokenIds.increment();
         _setTokenURI(id, tokenURI);
-
 
         return id;
     }
@@ -205,7 +203,11 @@ contract Amho is ERC721URIStorage {
         uint256 currentIndex = 0;
 
         for (uint256 i = 0; i < totalCount; i++) {
-            if (idToNFTState[i].itemState == ItemState.PENDING_INIT && idToNFTState[i].currentOwner == msg.sender) {
+            if (
+                idToNFTState[i].itemState == ItemState.PENDING_INIT &&
+                (idToNFTState[i].currentOwner == msg.sender ||
+                    idToNFTState[i].nextOwner == msg.sender)
+            ) {
                 pendingInitCount++;
             }
         }
@@ -230,7 +232,8 @@ contract Amho is ERC721URIStorage {
 
         for (uint256 i = 0; i < totalCount; i++) {
             if (
-                (idToNFTState[i].itemState == ItemState.PENDING_TETHER && idToNFTState[i].nextOwner == msg.sender) ||
+                (idToNFTState[i].itemState == ItemState.PENDING_TETHER &&
+                    idToNFTState[i].nextOwner == msg.sender) ||
                 idToNFTState[i].nextOwner == address(0)
             ) {
                 pendingTetherCount++;
@@ -253,13 +256,13 @@ contract Amho is ERC721URIStorage {
         return inMemPendingItems;
     }
 
-    // NOTE: Functions for Lit Protocol 
+    // NOTE: Functions for Lit Protocol
 
-    function getCurrentOwner(uint256 _tokenId) public view returns(address) {
+    function getCurrentOwner(uint256 _tokenId) public view returns (address) {
         return idToNFTState[_tokenId].currentOwner;
     }
 
-    function getNextOwner(uint256 _tokenId) public view returns(address) {
+    function getNextOwner(uint256 _tokenId) public view returns (address) {
         return idToNFTState[_tokenId].nextOwner;
     }
 }

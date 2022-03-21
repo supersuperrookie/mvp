@@ -20,8 +20,9 @@ import IconUntethered from "../components/Icons/IconUntethered";
  *
  *
  */
-const Collections = () => {
+const Collections = ({litCeramicStream}) => {
   const [globalState, globalActions] = useGlobal();
+  const [loggedInAddress, setLoggedInAddress] = useState("");
   const [loading, setLoading] = useState(true);
   const [owned, setOwned] = useState([]);
   const [pending, setPending] = useState([]);
@@ -37,6 +38,8 @@ const Collections = () => {
         window.ethereum,
         "any"
       );
+      const accounts = await provider.listAccounts();
+      setLoggedInAddress(accounts[0]);
       const signer = provider.getSigner();
       let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
 
@@ -68,6 +71,7 @@ const Collections = () => {
             price,
             tokenId: i.tokenId.toNumber(),
             owner: i.currentOwner,
+            nextOwner: i.nextOwner,
             imageURI: metadata.data.imageURI,
             status: i.itemState,
           };
@@ -78,6 +82,7 @@ const Collections = () => {
       setOwned(resultOwned);
 
       setPending(resultPending);
+      setLoading(false);
     }, [window.ethereum]);
   }
   const handleOpen = ({ id }) => {
@@ -85,7 +90,17 @@ const Collections = () => {
     // globalActions.ownedSetStatusPendingMate(id);
   };
 
-  const handleQR = () => {
+  const decryptSecret = async (qrData) => {
+    // INPUT ceramicStream
+    await litCeramicIntegration
+      .readAndDecrypt(qrData)
+      .then((decryptedText) => {
+        // setDecryptedSecret(decryptedText);
+        alert(decryptedText);
+      });
+  };
+
+  const handleQRInit = () => {
     let ethereum = window.ethereum;
     if (!ethereum) {
       console.log("No wallet detected");
@@ -98,7 +113,7 @@ const Collections = () => {
         params: ["\\D"],
       })
       .then((result) => {
-        console.log(result);
+        alert(result);
       })
       .catch((error) => {
         console.log(error);
@@ -109,19 +124,21 @@ const Collections = () => {
     return (
       <div className="flex flex-col">
         <div className="flex justify-center">
-          {item.status == 3 ||
-            item.status == 0 ? (
+          {item.status == 3 || item.status == 0 ? (
             <IconTethered />
-          ) : item.status == 1 || item.status == 2 ? (
+          ) : item.status == 1 && item.owner == loggedInAddress ? (
+            <a onClick={handleQRInit}>
+              <IconPending status={item.status} id={id} />
+            </a>
+          ) : item.status == 1 && item.nextOwner == loggedInAddress ? (
+            ""
+          ) : item.status == 2 && item.nextOwner == loggedInAddress ? (
             <a onClick={handleOpen}>
               <IconPending status={item.status} id={id} />
             </a>
-          ) : item.status == 4 ? 
-          (
-            <IconUntethered/>
-          ) : ("")
-          
-          }
+          ) : (
+            <IconUntethered />
+          )}
         </div>
         <div className="grow">
           <video
@@ -154,11 +171,10 @@ const Collections = () => {
         <h1 className="text-8xl font-bold text-slate-200">OWNED</h1>
       </div>
       <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
-        {owned.map((item, id) => ( 
-          item.status == 0 && 
-          <CollectionItem item={item} id={id} />
-          
-         ))}
+        {owned.map(
+          (item, id) =>
+            item.status == 0 && <CollectionItem item={item} id={id} />
+        )}
         {/* {globalState.ownedDummyData.map((item, id) => (
           <CollectionItem item={item} id={id} />
         ))} */}
@@ -169,11 +185,10 @@ const Collections = () => {
         <h1 className="text-8xl font-bold text-slate-200">ORDERS</h1>
       </div>
       <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
-        {pending.map((item, id) => ( 
-          item.status == 1 && 
-          <CollectionItem item={item} id={id} />
-          
-         ))}
+        {pending.map(
+          (item, id) =>
+            item.status == 1 && <CollectionItem item={item} id={id} />
+        )}
         {/* {globalState.ordersDummyData.map((item, id) => (
           <CollectionItem item={item} id={id} />
         ))} */}

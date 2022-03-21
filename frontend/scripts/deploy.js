@@ -15,10 +15,13 @@ async function main() {
   // await hre.run('compile');
   const [signer] = await ethers.getSigners();
   const mumbaiMaticAddress = ethers.utils.getAddress("0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1")
+  const linkTokenAddress = ethers.utils.getAddress("0x326C977E6efc84E512bB9C30f76E30c160eD06FB")
 
   const Escrow = await ethers.getContractFactory("Escrow");
   escrow = await Escrow.deploy();
   await escrow.deployed();
+
+  console.log("Escrow deployed to: ", escrow.address);
 
   const NFT = await ethers.getContractFactory("Amho");
   nft = await NFT.deploy(ethers.utils.getAddress(escrow.address));
@@ -26,17 +29,24 @@ async function main() {
 
   console.log("AMHO deployed to: ", nft.address);
 
+  const VRFConsumer = await ethers.getContractFactory("VRFConsumer");
+  vrfConsumer = await VRFConsumer.deploy();
+  await vrfConsumer.deployed();
+
+  console.log("VRF deployed to: ", vrfConsumer.address);
+
   await escrow
     .connect(signer)
     .setTokenAddresses(nft.address, mumbaiMaticAddress);
 
-  console.log("Escrow deployed to: ", escrow.address);
 
   fs.writeFileSync(
     "./config.js",
     `export const escrowAddress = "${escrow.address}"
 export const nftAddress = "${nft.address}"
 export const maticAddress = "${mumbaiMaticAddress}"
+export const vrfAddress = "${vrfConsumer.address}"
+export const linkTokenAddress = "${linkTokenAddress}"
 `
   );
 }

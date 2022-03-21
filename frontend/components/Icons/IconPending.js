@@ -1,7 +1,7 @@
 import { Status } from "../../utils/constants";
 import { useGlobal } from "../../utils/global-state";
 
-const pendingInitStyle = `h-10 w-10 text-slate-200 hover:text-gray-800`;
+const pendingInitStyle = `h-10 w-10 text-slate-200`;
 const pendingTetherStyle = `h-10 w-10 text-gray-800`;
 
 const IconPending = ({ status, id }) => {

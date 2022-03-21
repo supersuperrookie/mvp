@@ -193,6 +193,7 @@ describe("LINK test", async () => {
       vrfConsumer.address,
       "1000000000000000000"
     );
+
     await tx.wait();
     console.log("hash: ", tx.hash);
 
