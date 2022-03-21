@@ -61,7 +61,7 @@ TODO: If time then add fuji functionality
 */
 async function getRecord({
   ceramicNetwork = 'testnet-clay',
-  network = 'ethereum',
+  network = 'mumbai',
   client = null,
   schema = 'basicProfile',
   address = null

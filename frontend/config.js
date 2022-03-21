@@ -1,0 +1,5 @@
+export const escrowAddress = "0x718faA1E3B1de9Eef9d73E2FAD4a0526aD50517f"
+export const nftAddress = "0xb19e0a8daCe71Ec3D0889249D906400a60f2a483"
+export const maticAddress = "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1"
+export const vrfAddress = "0x82C5116c1D9ff611cda06De06E4CcB945E53D41e"
+export const linkTokenAddress = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB"

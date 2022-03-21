@@ -27,9 +27,9 @@ contract Escrow is Ownable {
 
     mapping(uint256 => EscrowOrder) public escrowOrderById;
 
-    event Received(address, uint);
+    event Received(address, uint256);
     event DepositedNFT(address indexed seller, address tokenAddress);
-    event DepositedToken(address indexed buyer, uint amount);
+    event DepositedToken(address indexed buyer, uint256 amount);
 
     function setTokenAddresses(address _amho, address _token) public {
         amho = _amho;
@@ -37,12 +37,19 @@ contract Escrow is Ownable {
         addressSet = true;
     }
 
-
-    function getEscrowOrderById(uint256 _tokenId) public view returns (EscrowOrder memory) {
+    function getEscrowOrderById(uint256 _tokenId)
+        public
+        view
+        returns (EscrowOrder memory)
+    {
         return escrowOrderById[_tokenId];
     }
 
-    function depositToken(address from, uint256 _tokenId, uint256 amount) external returns (bool) {
+    function depositToken(
+        address from,
+        uint256 _tokenId,
+        uint256 amount
+    ) external returns (bool) {
         require(addressSet, "Addresses not set");
         Amho _amho = Amho(amho);
 
@@ -59,16 +66,17 @@ contract Escrow is Ownable {
 
         emit DepositedToken(msg.sender, amount);
         return success;
-
     }
 
-    function depositNFT(address from, uint256 _tokenId) external returns(bool) {
+    function depositNFT(address from, uint256 _tokenId)
+        external
+        returns (bool)
+    {
         require(addressSet, "Addresses not set");
 
         // address seller = Amho(amho).ownerOf(_tokenId);
         address seller = IERC721(amho).ownerOf(_tokenId);
         EscrowOrder storage order = escrowOrderById[_tokenId];
-
 
         order.seller = payable(from);
         order.status = EscrowOrderState.DEPOSITED_NFT;
@@ -81,7 +89,11 @@ contract Escrow is Ownable {
         return true;
     }
 
-    function releaseOrder(uint256 _tokenId, bytes32 _secret) external secretMatch(_tokenId, _secret) {
+    function releaseOrder(uint256 _tokenId, bytes32 _secret)
+        external
+        secretMatch(_tokenId, _secret)
+        returns (uint256)
+    {
         EscrowOrder memory escrowOrder = escrowOrderById[_tokenId];
 
         address _buyer = escrowOrder.buyer;
@@ -92,6 +104,8 @@ contract Escrow is Ownable {
         IERC20(token).transfer(_seller, _value);
 
         delete escrowOrderById[_tokenId];
+
+        return _tokenId;
     }
 
     receive() external payable {

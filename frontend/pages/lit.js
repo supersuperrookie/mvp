@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useGlobal } from "../utils/global-state";
 import withLit from "../utils/withLit";
+import { toString, fromString } from "uint8arrays";
+import dynamic from "next/dynamic";
+const QrReader = dynamic(() => import("react-qr-reader"));
+
 // let litCeramicIntegration;
 // import('lit-ceramic-sdk').then((mod) => {
 //   if(typeof window !== 'undefined' || typeof document !== 'undefined') {
@@ -11,7 +15,7 @@ import withLit from "../utils/withLit";
 //     litCeramicIntegration.startLitClient(window);
 //   }
 // })
-// import { Integration } from "lit-ceramic-sdk";
+import { Integration } from "lit-ceramic-sdk";
 const CONTRACT_ADDRESS = "0xB54341db961E3849b0a950AB41c9e1C4C71FE216";
 // const BUYER_ADDRESS = "0xCf65E1e8343465fef356a831e5F716BcAcf045Bfasdasd";
 // const SELLER_ADDRESS = "0xbde1403056C81138fA8Abe97Ca19F39900073473";
@@ -38,7 +42,7 @@ const evmContractConditions = [
     returnValueTest: {
       key: "",
       comparator: "=",
-      value: ":userAddress",
+      value: "0xCf65E1e8343465fef356a831e5F716BcAcf045Bfasdasd",
     },
   },
   { operator: "or" },
@@ -63,23 +67,24 @@ const evmContractConditions = [
     returnValueTest: {
       key: "",
       comparator: "=",
-      value: ":userAddress",
+      value: "0xbde1403056C81138fA8Abe97Ca19F39900073473",
     },
   },
 ];
 const Lit = ({ litCeramicIntegration }) => {
-  // if(typeof window !== 'undefined' || typeof document !== 'undefined') {
-  //   const litCeramicIntegration = new Integration(
-  //     "https://ceramic-clay.3boxlabs.com",
-  //     "mumbai"
-  //   );
-  //   litCeramicIntegration.startLitClient(window);
-  // }
+  if (typeof window !== "undefined" || typeof document !== "undefined") {
+    const litCeramicIntegration = new Integration(
+      "https://ceramic-clay.3boxlabs.com",
+      "mumbai"
+    );
+    litCeramicIntegration.startLitClient(window);
+  }
   const [globalState, globalActions] = useGlobal();
   const [did, setDid] = useState("");
   const [streamId, setStreamId] = useState("");
   const [decryptedSecret, setDecryptedSecret] = useState("");
   const [lit, setLit] = useState(undefined);
+  const [data, setData] = useState("No result");
 
   useEffect(() => {
     setLit(litCeramicIntegration);
@@ -92,6 +97,10 @@ const Lit = ({ litCeramicIntegration }) => {
         setStreamId(result);
       });
   };
+
+  const handleScan = (qrData) => {
+    console.log(qrData);
+  }
 
   const handleInput = (e) => {
     e.preventDefault();
@@ -112,7 +121,8 @@ const Lit = ({ litCeramicIntegration }) => {
       <button onClick={encryptSecret}>Encrypt Secret</button>
       <button onClick={decryptSecret}>Decrypt</button>
       <input type="text" value={streamId} onChange={handleInput} />
-    </>
+      </>
   );
 };
+
 export default withLit(Lit);

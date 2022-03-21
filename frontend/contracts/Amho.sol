@@ -9,7 +9,6 @@ import "./Overrides/Counters.sol";
 import "./Overrides/ERC721URIStorage.sol";
 import "hardhat/console.sol";
 
-// Mint and Listing Contract
 contract Amho is ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -20,23 +19,23 @@ contract Amho is ERC721URIStorage {
         NEW,
         PENDING_INIT,
         PENDING_TETHER,
-        TETHERED
+        TETHERED,
+        UNTETHERED
     }
 
     struct NFTState {
+        ItemState itemState;
         uint256 tokenId;
         uint256 price;
-        address tetheredOwner;
-        ItemState itemState;
+        address currentOwner;
+        address nextOwner;
         bytes32 secret;
     }
-
 
     address payable escrowContractAddress;
     Escrow escrowContract;
 
     mapping(uint256 => NFTState) idToNFTState;
-    mapping(uint256 => address) idToOwner;
 
     constructor(address payable _escrowContractAddress) ERC721("AMHO", "AMHO") {
         // constructor() ERC721("AMHO", "AMHO") {
@@ -45,7 +44,11 @@ contract Amho is ERC721URIStorage {
         escrowContract = Escrow(_escrowContractAddress);
     }
 
-    function getTetheredData(uint256 _tokenId)
+    function getPrice(uint256 _tokenId) public view returns (uint256) {
+        return getNFTState(_tokenId).price;
+    }
+
+    function getNFTState(uint256 _tokenId)
         public
         view
         returns (NFTState memory)
@@ -54,14 +57,8 @@ contract Amho is ERC721URIStorage {
     }
 
     function getSecret(uint256 _tokenId) external view returns (bytes32) {
-        NFTState memory orderState = getTetheredData(_tokenId);
+        NFTState memory orderState = getNFTState(_tokenId);
         return orderState.secret;
-    }
-
-    function unlockById(uint256 _tokenId, bytes32 _secret) public {
-        bytes32 secret = idToNFTState[_tokenId].secret;
-        require(secret == _secret, "Unauthorized");
-        escrowContract.releaseOrder(_tokenId, _secret);
     }
 
     // TODO: Price match between the price of the minted token and msg.value
@@ -72,21 +69,54 @@ contract Amho is ERC721URIStorage {
             "Tokens were not able to be deposited."
         );
 
-        // TODO: Change state
+        NFTState storage nftState = idToNFTState[_tokenId];
+        nftState.nextOwner = msg.sender;
+        nftState.itemState = ItemState.PENDING_INIT;
     }
 
-    function depositNftToEscrow(uint256 _tokenId) public {
+    function depositNftToEscrow(uint256 _tokenId, bytes32 _secret) public {
         require(
             escrowContract.depositNFT(msg.sender, _tokenId),
             "NFT was not able to be deposited."
         );
 
-        // TODO: Change state
+        require(msg.sender == idToNFTState[_tokenId].currentOwner, "Not the owner");
+        require(idToNFTState[_tokenId].secret == _secret, "Unauthorized");
+
+        NFTState storage nftState = idToNFTState[_tokenId];
+        if (nftState.currentOwner != msg.sender) {
+            nftState.currentOwner = msg.sender;
+        }
+        nftState.itemState = ItemState.PENDING_TETHER;
     }
 
-    function releaseOrderToEscrow(address from, uint256 _tokenId, bytes32 _secret) public {
-        require(from == idToNFTState[_tokenId].tetheredOwner);
-        escrowContract.releaseOrder(_tokenId, _secret);
+    function releaseOrderToEscrow(uint256 _tokenId, bytes32 _secret)
+        public
+        returns (uint256)
+    {
+        require(msg.sender == idToNFTState[_tokenId].nextOwner);
+        NFTState storage nftState = idToNFTState[_tokenId];
+        nftState.itemState = ItemState.TETHERED;
+        uint256 retTokenId = escrowContract.releaseOrder(_tokenId, _secret);
+        return retTokenId;
+    }
+
+    // Oracle to run. Yeah yeah I know. This is expensive.
+
+    function gasOpOracleCheckUntethered() public {
+        uint256 itemCount = _tokenIds.current();
+        for (uint256 i; i < itemCount; i++) {
+            NFTState memory localState = getNFTState(i);
+            // NFTState storage state = idToNFTState[i];
+            address possibleOwner = ownerOf(i);
+            address currOwner = localState.currentOwner;
+            address nextOwner = localState.nextOwner;
+
+            if (possibleOwner != currOwner || possibleOwner != nextOwner) {
+                localState.itemState = ItemState.UNTETHERED;
+            }
+            idToNFTState[i] = localState;
+        }
     }
 
     function mintToken(
@@ -98,19 +128,144 @@ contract Amho is ERC721URIStorage {
 
         setApprovalForAll(escrowContractAddress, true);
         _mint(msg.sender, id);
-        console.log("Minted to: ", msg.sender);
+
         idToNFTState[id] = NFTState({
             price: _price,
             tokenId: id,
-            tetheredOwner: msg.sender,
+            currentOwner: msg.sender,
+            nextOwner: address(0),
             itemState: ItemState.NEW,
             secret: secret
         });
 
+        _tokenIds.increment();
         _setTokenURI(id, tokenURI);
 
-        _tokenIds.increment();
-
         return id;
+    }
+
+    // NOTE: Fetch On Sale
+
+    function fetchOnSale() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 ownedCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (idToNFTState[i].itemState == ItemState.NEW) {
+                ownedCount++;
+            }
+        }
+
+        NFTState[] memory inMemItems = new NFTState[](ownedCount);
+
+        for (uint256 i = 0; i < ownedCount; i++) {
+            if (idToNFTState[i].itemState == ItemState.NEW) {
+                uint256 currentId = idToNFTState[i].tokenId;
+                NFTState storage currentItem = idToNFTState[currentId];
+                inMemItems[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+
+        return inMemItems;
+    }
+
+    // NOTE: Fetch Owned
+
+    function fetchOwned() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 ownedCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (idToNFTState[i].currentOwner == msg.sender) {
+                ownedCount++;
+            }
+        }
+
+        NFTState[] memory inMemOwnedItems = new NFTState[](ownedCount);
+
+        for (uint256 i = 0; i < ownedCount; i++) {
+            if (idToNFTState[i].currentOwner == msg.sender) {
+                uint256 currentId = idToNFTState[i].tokenId;
+                NFTState storage currentItem = idToNFTState[currentId];
+                inMemOwnedItems[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+
+        return inMemOwnedItems;
+    }
+
+    // NOTE: PENDING_INIT
+
+    function fetchPendingInitOrders() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 pendingInitCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (
+                idToNFTState[i].itemState == ItemState.PENDING_INIT &&
+                (idToNFTState[i].currentOwner == msg.sender ||
+                    idToNFTState[i].nextOwner == msg.sender)
+            ) {
+                pendingInitCount++;
+            }
+        }
+
+        NFTState[] memory inMemPendingItems = new NFTState[](pendingInitCount);
+
+        for (uint256 i = 0; i < pendingInitCount; i++) {
+            uint256 currentId = idToNFTState[i].tokenId;
+            NFTState storage currentItem = idToNFTState[currentId];
+            inMemPendingItems[currentIndex] = currentItem;
+            currentIndex++;
+        }
+        return inMemPendingItems;
+    }
+
+    // NOTE: PENDING_TETHER Case in which just minted or just bought
+
+    function fetchPendingTether() public view returns (NFTState[] memory) {
+        uint256 totalCount = _tokenIds.current();
+        uint256 pendingTetherCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalCount; i++) {
+            if (
+                (idToNFTState[i].itemState == ItemState.PENDING_TETHER &&
+                    (idToNFTState[i].nextOwner == msg.sender) ||
+                idToNFTState[i].nextOwner == address(0))
+            ) {
+                pendingTetherCount++;
+            }
+        }
+
+        NFTState[] memory inMemPendingItems = new NFTState[](
+            pendingTetherCount
+        );
+
+        for (uint256 i = 0; i < pendingTetherCount; i++) {
+            if (idToNFTState[i].nextOwner == msg.sender) {
+                uint256 currentId = idToNFTState[i].tokenId;
+                NFTState storage currentItem = idToNFTState[currentId];
+                inMemPendingItems[currentIndex] = currentItem;
+                currentIndex++;
+            }
+        }
+
+        return inMemPendingItems;
+    }
+
+    // NOTE: Functions for Lit Protocol
+
+    function getCurrentOwner(uint256 _tokenId) public view returns (address) {
+        return idToNFTState[_tokenId].currentOwner;
+    }
+
+    function getNextOwner(uint256 _tokenId) public view returns (address) {
+        return idToNFTState[_tokenId].nextOwner;
     }
 }
