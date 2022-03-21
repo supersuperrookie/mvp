@@ -109,7 +109,7 @@ const Admin = ({ litCeramicIntegration }) => {
     let tx_receipt = await randomTransaction.wait();
     const requestId = tx_receipt.events[2].topics[1];
 
-    await new Promise((resolve) => setTimeout(resolve, 60000));
+    await new Promise((resolve) => setTimeout(resolve, 30000));
 
     let result = await vrfConsumer.randomResult();
 

@@ -111,10 +111,10 @@ const Collections = ({ litCeramicIntegration }) => {
         })
       );
 
-      console.log(resultPendingTether)
+      console.log(resultOwned);
       setOwned(resultOwned);
       setPending(resultPending);
-      setPendingTether(resultPendingTether)
+      setPendingTether(resultPendingTether);
       setLoading(false);
     }, [window.ethereum]);
   }
@@ -124,25 +124,34 @@ const Collections = ({ litCeramicIntegration }) => {
     // globalActions.ownedSetStatusPendingMate(id);
   };
 
-  const decryptSecret = async (qrData) => {
+  const decryptSecret = async (qrData, type) => {
     // INPUT ceramicStream
 
-    await litCeramicIntegration.readAndDecrypt(qrData).then(async (decryptedText) => {
-      setDecryptedSecret(decryptedText);
-      const secret = ethers.BigNumber.from(decryptedText); 
-      const hexSecret = ethers.utils.hexlify(secret);
-      const soliditySecret = ethers.utils.solidityKeccak256(["bytes32"], [hexSecret]);
-      const tokenId = _tokenId;
+    await litCeramicIntegration
+      .readAndDecrypt(qrData)
+      .then(async (decryptedText) => {
+        setDecryptedSecret(decryptedText);
+        const secret = ethers.BigNumber.from(decryptedText);
+        const hexSecret = ethers.utils.hexlify(secret);
+        const soliditySecret = ethers.utils.solidityKeccak256(
+          ["bytes32"],
+          [hexSecret]
+        );
+        const tokenId = _tokenId;
 
-      const provider = new ethers.providers.Web3Provider(
-        window.ethereum,
-        "any"
-      );
+        const provider = new ethers.providers.Web3Provider(
+          window.ethereum,
+          "any"
+        );
 
-      const signer = provider.getSigner();
-      let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
-      await amhoContract.depositNftToEscrow(tokenId, soliditySecret);
-    });
+        const signer = provider.getSigner();
+        let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
+        if (type == 2) {
+          await amhoContract.releaseOrderToEscrow(tokenId, soliditySecret);
+        } else {
+          await amhoContract.depositNftToEscrow(tokenId, soliditySecret);
+        }
+      });
   };
 
   // const handleQROpen = (tokenId) => {
@@ -150,6 +159,27 @@ const Collections = ({ litCeramicIntegration }) => {
   //   setQrOpen(!qrOpen);
   // };
 
+  const handleQRTether = (tokenId, type) => {
+    setTokenId(tokenId);
+    let ethereum = window.ethereum;
+    if (!ethereum) {
+      console.log("No wallet detected");
+    }
+
+    ethereum
+      .request({
+        method: "wallet_scanQRCode",
+        // The regex string must be valid input to the RegExp constructor, if provided
+        params: ["\\D"],
+      })
+      .then((result) => {
+        // alert(result);
+        decryptSecret(result, type);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   const handleQRInit = (tokenId) => {
     setTokenId(tokenId);
     let ethereum = window.ethereum;
@@ -185,7 +215,7 @@ const Collections = ({ litCeramicIntegration }) => {
           ) : item.status == 1 && item.nextOwner == loggedInAddress ? (
             ""
           ) : item.status == 2 && item.nextOwner == loggedInAddress ? (
-            <a onClick={() => handleQROpen(item.tokenId)}>
+            <a onClick={() => handleQRTether(item.tokenId, item.status)}>
               <IconPending status={item.status} id={id} />
             </a>
           ) : (
@@ -225,7 +255,7 @@ const Collections = ({ litCeramicIntegration }) => {
       <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
         {owned.map(
           (item, id) =>
-            item.status == 0 && <CollectionItem item={item} id={id} />
+            (item.status == 0 || item.status == 3) && <CollectionItem item={item} id={id} />
         )}
         {/* {globalState.ownedDummyData.map((item, id) => (
           <CollectionItem item={item} id={id} />
@@ -239,11 +269,11 @@ const Collections = ({ litCeramicIntegration }) => {
       <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
         {pending.map(
           (item, id) =>
-            (item.status == 1) && <CollectionItem item={item} id={id} />
+            item.status == 1 && <CollectionItem item={item} id={id} />
         )}
         {pendingTether.map(
           (item, id) =>
-            (item.status == 2) && <CollectionItem item={item} id={id} />
+            item.status == 2 && <CollectionItem item={item} id={id} />
         )}
         {/* {globalState.ordersDummyData.map((item, id) => (
           <CollectionItem item={item} id={id} />
@@ -255,7 +285,7 @@ const Collections = ({ litCeramicIntegration }) => {
         itemImage={"./bag1.mp4"}
       />
       {/* <div className={!qrOpen ? `invisible` : `visible`}> */}
-        {/* <QrReader
+      {/* <QrReader
           onScan={(result) => handleScan(result)}
           scanDelay={1000}
           onResult={(result, error) => {
