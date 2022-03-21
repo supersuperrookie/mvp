@@ -1,6 +1,7 @@
 import { LayoutMargin } from "../components/Layout";
 import { useEffect, useState } from "react";
 import { evmContractConditions } from "../utils/constants";
+import { useQRCode } from "next-qrcode";
 import Amho from "../artifacts/contracts/Amho.sol/Amho.json";
 import VRF from "../artifacts/contracts/VRFConsumer.sol/VRFConsumer.json";
 import withLit from "../utils/withLit";
@@ -68,12 +69,15 @@ const Admin = ({ litCeramicIntegration }) => {
   const [ceramic, setCeramic] = useState(null);
   const [signer, setSigner] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
-  const [finalSecretStream, setSecretStream] = useState(undefined);
+  const [finalSecretStream, setSecretStream] = useState(null);
 
+  const [qrRef, setQrRef] = useState(null);
   const [metadataUrl, setMetadataUrl] = useState(null);
   const [metadata, setMetadata] = useState({
     ...preloadMintData,
   });
+
+  const { Image } = useQRCode();
 
   if (typeof window !== "undefined") {
     useEffect(() => {
@@ -82,7 +86,6 @@ const Admin = ({ litCeramicIntegration }) => {
       setCeramic(ceramic);
     }, []);
   }
-
 
   const getVRF = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -106,9 +109,11 @@ const Admin = ({ litCeramicIntegration }) => {
     let tx_receipt = await randomTransaction.wait();
     const requestId = tx_receipt.events[2].topics[1];
 
-    const result = await vrfConsumer.randomResult();
+    let result = await vrfConsumer.randomResult();
 
-    await new Promise(resolve => setTimeout(resolve, 80000));
+    await new Promise((resolve) => setTimeout(resolve, 20000));
+
+    result = await vrfConsumer.getRandomResult();
 
     const resultString = ethers.BigNumber.from(result._hex).toString();
     const hexString = ethers.BigNumber.from(result._hex).toHexString();
@@ -132,7 +137,6 @@ const Admin = ({ litCeramicIntegration }) => {
       )
       .then((result) => {
         setSecretStream(result);
-        QRCode.toFile('../secret.png', result);
         return result;
       });
   };
@@ -202,7 +206,7 @@ const Admin = ({ litCeramicIntegration }) => {
 
     let tx = await amhoContract.mintToken(hashedSecret, metadataURI, price);
     await tx.wait();
-    Router.push("/collections");
+    // Router.push("/collections");
   };
 
   return (
@@ -232,6 +236,25 @@ const Admin = ({ litCeramicIntegration }) => {
           >
             TEST VRF
           </button>
+        </div>
+        <div>
+          {finalSecretStream && (
+            <Image
+              text={finalSecretStream}
+              options={{
+                type: "image/jpeg",
+                quality: 0.3,
+                level: "M",
+                margin: 3,
+                scale: 4,
+                width: 200,
+                color: {
+                  dark: "#010599FF",
+                  light: "#FFBF60FF",
+                },
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

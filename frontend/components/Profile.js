@@ -19,7 +19,7 @@ const Profile = () => {
         <div>
           <div className="text-xl font-medium text-black">Bufficorn</div>
           <div className="text-slate-500">{formatDid(globalState.did)}</div>
-          <div className="text-slate-500">{globalState.account}</div>
+          {/* <div className="text-slate-500 sm:invisible">{globalState.account}</div> */}
         </div>
       </div>
     );

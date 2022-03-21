@@ -63,7 +63,7 @@ const Shop = () => {
     <div className={LayoutMargin}>
       <div className="flex-grow">
         <div className="pb-20">
-          <h1 className="text-8xl font-bold text-slate-200">ON SALE</h1>
+          <h1 className="sm:text-8xl font-bold text-slate-200">ON SALE</h1>
         </div>
         <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
           {onSale.map((item, id) => (

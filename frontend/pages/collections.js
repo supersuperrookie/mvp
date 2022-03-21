@@ -20,7 +20,7 @@ import IconUntethered from "../components/Icons/IconUntethered";
  *
  *
  */
-const Collections = ({litCeramicStream}) => {
+const Collections = ({litCeramicIntegration}) => {
   const [globalState, globalActions] = useGlobal();
   const [loggedInAddress, setLoggedInAddress] = useState("");
   const [loading, setLoading] = useState(true);
@@ -113,7 +113,9 @@ const Collections = ({litCeramicStream}) => {
         params: ["\\D"],
       })
       .then((result) => {
-        alert(result);
+        // alert(result);
+        alert(typeof result);
+        decryptSecret(result);
       })
       .catch((error) => {
         console.log(error);
