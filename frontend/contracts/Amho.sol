@@ -97,6 +97,7 @@ contract Amho is ERC721URIStorage {
         require(msg.sender == idToNFTState[_tokenId].nextOwner);
         NFTState storage nftState = idToNFTState[_tokenId];
         nftState.itemState = ItemState.TETHERED;
+        nftState.currentOwner = msg.sender;
         uint256 retTokenId = escrowContract.releaseOrder(_tokenId, _secret);
         return retTokenId;
     }
