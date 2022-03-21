@@ -42,7 +42,7 @@ const evmContractConditions = [
     returnValueTest: {
       key: "",
       comparator: "=",
-      value: ":userAddress",
+      value: "0xCf65E1e8343465fef356a831e5F716BcAcf045Bfasdasd",
     },
   },
   { operator: "or" },
@@ -67,7 +67,7 @@ const evmContractConditions = [
     returnValueTest: {
       key: "",
       comparator: "=",
-      value: ":userAddress",
+      value: "0xbde1403056C81138fA8Abe97Ca19F39900073473",
     },
   },
 ];
@@ -107,9 +107,8 @@ const Lit = ({ litCeramicIntegration }) => {
     setStreamId(e.target.value);
   };
   const decryptSecret = async () => {
-    let newStreamId = streamId.toString(16);
     const response = await litCeramicIntegration
-      .readAndDecrypt(newStreamId)
+      .readAndDecrypt(streamId)
       .then((decryptedText) => {
         setDecryptedSecret(decryptedText);
         alert(decryptedText);
@@ -120,23 +119,9 @@ const Lit = ({ litCeramicIntegration }) => {
     <>
       {/* <button onClick={handleLogin}>Sign In</button> */}
       <button onClick={encryptSecret}>Encrypt Secret</button>
-      {/* <button onClick={decryptSecret}>Decrypt</button> */}
-      {/* <input type="text" value={streamId} onChange={handleInput} /> */}
-        <QrReader
-          onScan={handleScan}
-          onResult={(result, error) => {
-            if (!!result) {
-              // setData(result?.text);
-              console.log(result);
-            }
-
-            if (!!error) {
-              console.info(error);
-            }
-          }}
-          style={{ width: 1000 }}
-        />
-    </>
+      <button onClick={decryptSecret}>Decrypt</button>
+      <input type="text" value={streamId} onChange={handleInput} />
+      </>
   );
 };
 

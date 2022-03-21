@@ -14,22 +14,36 @@ import { nftAddress, escrowAddress } from "../config";
 import Amho from "../artifacts/contracts/Amho.sol/Amho.json";
 import IconUntethered from "../components/Icons/IconUntethered";
 
+import dynamic from "next/dynamic";
+
+const QrReader = dynamic(() => import("react-qr-reader"));
+
 /**
  *
  * Status will be returned by the smart contract
  *
  *
  */
-const Collections = ({litCeramicIntegration}) => {
+const Collections = ({ litCeramicIntegration }) => {
   const [globalState, globalActions] = useGlobal();
   const [loggedInAddress, setLoggedInAddress] = useState("");
   const [loading, setLoading] = useState(true);
   const [owned, setOwned] = useState([]);
   const [pending, setPending] = useState([]);
+  const [pendingTether, setPendingTether] = useState([]);
   // const [ownedItems, setOwnedItems] = useState([]);
   const [open, setOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [_tokenId, setTokenId] = useState(0);
+  const [streamData, setStreamData] = useState(null);
+  const [decryptedSecret, setDecryptedSecret] = useState(null);
   // TODO: Reach out to grab the array based on the user address to get the collections
-
+  const handleScan = (result, type) => {
+    if (result) {
+      setStreamData(result);
+      decryptSecret(result);
+    }
+  };
   if (typeof window !== "undefined") {
     useEffect(async () => {
       // NOTE: Returns owned array
@@ -45,6 +59,7 @@ const Collections = ({litCeramicIntegration}) => {
 
       let owned = await amhoContract.fetchOwned();
       let pending = await amhoContract.fetchPendingInitOrders();
+      let pendingTether = await amhoContract.fetchPendingTether();
 
       const resultOwned = await Promise.all(
         owned.map(async (i) => {
@@ -79,12 +94,31 @@ const Collections = ({litCeramicIntegration}) => {
         })
       );
 
-      setOwned(resultOwned);
+      const resultPendingTether = await Promise.all(
+        pendingTether.map(async (i) => {
+          const tokenURI = await amhoContract.tokenURI(i.tokenId);
+          const metadata = await axios.get(tokenURI);
+          let price = ethers.utils.formatUnits(i.price.toString(), "ether");
+          let item = {
+            price,
+            tokenId: i.tokenId.toNumber(),
+            owner: i.currentOwner,
+            nextOwner: i.nextOwner,
+            imageURI: metadata.data.imageURI,
+            status: i.itemState,
+          };
+          return item;
+        })
+      );
 
+      console.log(resultPendingTether)
+      setOwned(resultOwned);
       setPending(resultPending);
+      setPendingTether(resultPendingTether)
       setLoading(false);
     }, [window.ethereum]);
   }
+
   const handleOpen = ({ id }) => {
     setOpen(!open);
     // globalActions.ownedSetStatusPendingMate(id);
@@ -92,15 +126,32 @@ const Collections = ({litCeramicIntegration}) => {
 
   const decryptSecret = async (qrData) => {
     // INPUT ceramicStream
-    await litCeramicIntegration
-      .readAndDecrypt(qrData)
-      .then((decryptedText) => {
-        // setDecryptedSecret(decryptedText);
-        alert(decryptedText);
-      });
+
+    await litCeramicIntegration.readAndDecrypt(qrData).then(async (decryptedText) => {
+      setDecryptedSecret(decryptedText);
+      const secret = ethers.BigNumber.from(decryptedText); 
+      const hexSecret = ethers.utils.hexlify(secret);
+      const soliditySecret = ethers.utils.solidityKeccak256(["bytes32"], [hexSecret]);
+      const tokenId = _tokenId;
+
+      const provider = new ethers.providers.Web3Provider(
+        window.ethereum,
+        "any"
+      );
+
+      const signer = provider.getSigner();
+      let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
+      await amhoContract.depositNftToEscrow(tokenId, soliditySecret);
+    });
   };
 
-  const handleQRInit = () => {
+  // const handleQROpen = (tokenId) => {
+  //   setTokenId(tokenId);
+  //   setQrOpen(!qrOpen);
+  // };
+
+  const handleQRInit = (tokenId) => {
+    setTokenId(tokenId);
     let ethereum = window.ethereum;
     if (!ethereum) {
       console.log("No wallet detected");
@@ -114,7 +165,6 @@ const Collections = ({litCeramicIntegration}) => {
       })
       .then((result) => {
         // alert(result);
-        alert(typeof result);
         decryptSecret(result);
       })
       .catch((error) => {
@@ -129,13 +179,13 @@ const Collections = ({litCeramicIntegration}) => {
           {item.status == 3 || item.status == 0 ? (
             <IconTethered />
           ) : item.status == 1 && item.owner == loggedInAddress ? (
-            <a onClick={handleQRInit}>
+            <a onClick={() => handleQRInit(item.tokenId)}>
               <IconPending status={item.status} id={id} />
             </a>
           ) : item.status == 1 && item.nextOwner == loggedInAddress ? (
             ""
           ) : item.status == 2 && item.nextOwner == loggedInAddress ? (
-            <a onClick={handleOpen}>
+            <a onClick={() => handleQROpen(item.tokenId)}>
               <IconPending status={item.status} id={id} />
             </a>
           ) : (
@@ -189,7 +239,11 @@ const Collections = ({litCeramicIntegration}) => {
       <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
         {pending.map(
           (item, id) =>
-            item.status == 1 && <CollectionItem item={item} id={id} />
+            (item.status == 1) && <CollectionItem item={item} id={id} />
+        )}
+        {pendingTether.map(
+          (item, id) =>
+            (item.status == 2) && <CollectionItem item={item} id={id} />
         )}
         {/* {globalState.ordersDummyData.map((item, id) => (
           <CollectionItem item={item} id={id} />
@@ -200,6 +254,23 @@ const Collections = ({litCeramicIntegration}) => {
         handleOpen={handleOpen}
         itemImage={"./bag1.mp4"}
       />
+      {/* <div className={!qrOpen ? `invisible` : `visible`}> */}
+        {/* <QrReader
+          onScan={(result) => handleScan(result)}
+          scanDelay={1000}
+          onResult={(result, error) => {
+            if (!!result) {
+              // setData(result?.text);
+              console.log(result);
+            }
+
+            if (!!error) {
+              console.info(error);
+            }
+          }}
+          style={{ width: 400 }}
+        /> */}
+      {/* </div> */}
     </div>
   );
 };

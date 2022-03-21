@@ -102,11 +102,11 @@ function ShopItem() {
         <video
           className="flex-1 p-80"
           src={item.imageURI}
-          // autoPlay
-          // loop
+          autoPlay
+          loop
           muted
-          height={600}
-          width={350}
+          height={800}
+          width={450}
           type="video/mp4"
         />
         <div className="flex-1 p-20">

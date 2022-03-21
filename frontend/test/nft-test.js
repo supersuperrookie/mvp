@@ -1,12 +1,32 @@
-const { ethers } = require("hardhat");
-const { randomBytes } = require("crypto");
+const { ethers } = require("hardhat"); 
+const { randomBytes } = require("crypto"); 
 const { expect } = require("chai");
+const BigNumber = require('bignumber.js');
 
 const LinkArtifact = require("../artifacts/@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol/LinkTokenInterface.json");
 
 const LinkTokenABI = LinkArtifact.abi;
 
-describe.only("Escrow Deposit Flow", function () {
+/**
+ * 
+ * 
+ * 
+ * Secret:  55533138225220826159753323961673023896025742085827813625238583784841373531198
+ * hexSecret:  0x7ac6a472b83a38ef3ba7a934d7b8d760da3fbb1e8f3d49703a99760f87ebbc3e
+ * 
+ */
+describe.only("Test", function() {
+  // const hexSecret = ethers.utils.hexlify("0x7ac6a472b83a38ef3ba7a934d7b8d760da3fbb1e8f3d49703a99760f87ebbc3e"); 
+  // const hex2 = ethers.BigNumber.from(hexSecret);
+  // console.log(hex2)
+  const secret = ethers.BigNumber.from("55533138225220826159753323961673023896025742085827813625238583784841373531198"); 
+  // const hashSecret = ethers.utils.id(secret);
+  const hexSecret = ethers.utils.hexlify(secret);
+  // const hexhexSecret = ethers.BigNumber.from(hexSecret)
+  // console.log(hexhexSecret);
+  console.log(hexSecret)
+})
+describe("Escrow Deposit Flow", function () {
   beforeEach(async () => {
     [sellerAddress, buyerAddress] = await ethers.getSigners();
     secret = new Uint8Array(randomBytes(32));
@@ -89,10 +109,11 @@ describe.only("Escrow Deposit Flow", function () {
       const result = await nft.getNFTState(mintedTokenId);
 
       // NOTE: Struct tests
-
+      const nextOwner = await nft.getNextOwner(mintedTokenId);
+      const currentOwner = await nft.getCurrentOwner(mintedTokenId);
       expect(result["price"]).to.equal(cost);
-      expect(result["currentOwner"]).to.equal(sellerAddress.address);
-      expect(result["nextOwner"]).to.equal(buyerAddress.address);
+      expect(currentOwner).to.equal(sellerAddress.address);
+      expect(nextOwner).to.equal(buyerAddress.address);
       expect(result["secret"]).to.equal(hashedSecret);
     });
 

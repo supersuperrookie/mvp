@@ -19,12 +19,6 @@ const NavItems = [
     url: "/admin",
     active: false
   },
-  // {
-  {
-    label: "Lit",
-    url: "/lit",
-    active: false
-  },
   //   label: "Lit",
   //   url: "/lit",
   //   active: false,

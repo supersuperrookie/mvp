@@ -109,12 +109,14 @@ const Admin = ({ litCeramicIntegration }) => {
     let tx_receipt = await randomTransaction.wait();
     const requestId = tx_receipt.events[2].topics[1];
 
+    await new Promise((resolve) => setTimeout(resolve, 60000));
+
     let result = await vrfConsumer.randomResult();
 
-    await new Promise((resolve) => setTimeout(resolve, 20000));
-
-    result = await vrfConsumer.getRandomResult();
-
+    /**
+     * 
+     * 
+     */
     const resultString = ethers.BigNumber.from(result._hex).toString();
     const hexString = ethers.BigNumber.from(result._hex).toHexString();
 
@@ -126,6 +128,13 @@ const Admin = ({ litCeramicIntegration }) => {
     // const finalResult2 = await vrfConsumer.getRandomResult();
     // console.log(finalResult);
     // console.log(finalResult2);
+  };
+
+  const decryptSecret = async () => {
+    // INPUT ceramicStream
+    await litCeramicIntegration.readAndDecrypt(finalSecretStream).then((decryptedText) => {
+      alert(decryptedText);
+    });
   };
 
   const encryptSecret = async (secretValue) => {
@@ -192,10 +201,16 @@ const Admin = ({ litCeramicIntegration }) => {
 
     let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
 
-    // TODO: Change to VRF when you get the chance
 
     // let secret = new Uint8Array(randomBytes(32));
+    /**
+    const resultString = ethers.BigNumber.from(result._hex).toString();
+    const hexString = ethers.BigNumber.from(result._hex).toHexString();
+     * 
+     */
     let [secret, hexSecret] = await getVRF();
+    console.log("Secret: ", secret)
+    console.log("hexSecret: ", hexSecret)
 
     await encryptSecret(secret);
 
@@ -231,29 +246,31 @@ const Admin = ({ litCeramicIntegration }) => {
             MINT
           </button>
           <button
-            onClick={getVRF}
+            onClick={() => decryptSecret(finalSecretStream)}
             class="w-full focus:ring-4 ring-slate-800 ring-2 dark:text-gray-800 dark:bg-slate-50 sm:w-auto mt-14 text-base leading-4 text-center text-white py-6 px-16 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 bg-gray-800"
           >
-            TEST VRF
+            TEST
           </button>
         </div>
         <div>
           {finalSecretStream && (
+            <div className="mt-10">
             <Image
               text={finalSecretStream}
               options={{
                 type: "image/jpeg",
-                quality: 0.3,
+                quality: 0.9,
                 level: "M",
                 margin: 3,
                 scale: 4,
                 width: 200,
                 color: {
-                  dark: "#010599FF",
-                  light: "#FFBF60FF",
+                  dark: "#000000FF",
+                  light: "#FFFFFFFF",
                 },
               }}
             />
+            </div>
           )}
         </div>
       </div>

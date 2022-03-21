@@ -74,11 +74,14 @@ contract Amho is ERC721URIStorage {
         nftState.itemState = ItemState.PENDING_INIT;
     }
 
-    function depositNftToEscrow(uint256 _tokenId) public {
+    function depositNftToEscrow(uint256 _tokenId, bytes32 _secret) public {
         require(
             escrowContract.depositNFT(msg.sender, _tokenId),
             "NFT was not able to be deposited."
         );
+
+        require(msg.sender == idToNFTState[_tokenId].currentOwner, "Not the owner");
+        require(idToNFTState[_tokenId].secret == _secret, "Unauthorized");
 
         NFTState storage nftState = idToNFTState[_tokenId];
         if (nftState.currentOwner != msg.sender) {
@@ -233,8 +236,8 @@ contract Amho is ERC721URIStorage {
         for (uint256 i = 0; i < totalCount; i++) {
             if (
                 (idToNFTState[i].itemState == ItemState.PENDING_TETHER &&
-                    idToNFTState[i].nextOwner == msg.sender) ||
-                idToNFTState[i].nextOwner == address(0)
+                    (idToNFTState[i].nextOwner == msg.sender) ||
+                idToNFTState[i].nextOwner == address(0))
             ) {
                 pendingTetherCount++;
             }
@@ -245,7 +248,7 @@ contract Amho is ERC721URIStorage {
         );
 
         for (uint256 i = 0; i < pendingTetherCount; i++) {
-            if (idToNFTState[i].currentOwner == msg.sender) {
+            if (idToNFTState[i].nextOwner == msg.sender) {
                 uint256 currentId = idToNFTState[i].tokenId;
                 NFTState storage currentItem = idToNFTState[currentId];
                 inMemPendingItems[currentIndex] = currentItem;

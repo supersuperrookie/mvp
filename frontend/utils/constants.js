@@ -10,12 +10,14 @@ export const Status = [
   "UNTETHERED",      // 4
 ];
 
+const BUYER_ADDRESS = "0x5B4849c0A5BE7C11dc141352e6093E4b2Baa3A8E"
+const SELLER_ADDRESS = "0xe44dbD837aA41F2814CDAc1ff03Df962f1Eb7D30"
 
 export const evmContractConditions = [
   {
     contractAddress: CONTRACT_ADDRESS,
     functionName: "getCurrentOwner",
-    functionParams: [],
+    functionParams: ["0"],
     functionAbi: {
       inputs: [
         {
@@ -46,7 +48,7 @@ export const evmContractConditions = [
   {
     contractAddress: CONTRACT_ADDRESS,
     functionName: "getNextOwner",
-    functionParams: [],
+    functionParams: ["0"],
     functionAbi: {
       inputs: [
         {

@@ -10,14 +10,14 @@ import withLit from "../utils/withLit";
 
 const Profile = () => {
   const [globalState, globalActions] = useGlobal();
-  if (typeof globalState.did !== 'undefined')
+  if (typeof globalState.did !== 'undefined' && typeof window !== 'undefined')
     return (
       <div className="p-6 rounded-xl flex items-center space-x-4">
         <div className="shrink-0">
-          <img className="h-12 w-12 rounded-full" src="/profile.png" alt="" />
+          <img className="h-12 w-12 rounded-full" src={globalState.did === "did:3:kjzl6cwe1jw148zszusjm9y46l55wwhhmdhsxloepwsycgoyewmxsxqlqpegwh2"  ? "/profileseller.png" : "/profile.png"} alt="" />
         </div>
         <div>
-          <div className="text-xl font-medium text-black">Bufficorn</div>
+          <div className="text-xl font-medium text-black">{globalState.did === "did:3:kjzl6cwe1jw148zszusjm9y46l55wwhhmdhsxloepwsycgoyewmxsxqlqpegwh2" ? "Bufficorn Seller" : "Bufficorn Buyer"}</div>
           <div className="text-slate-500">{formatDid(globalState.did)}</div>
           {/* <div className="text-slate-500 sm:invisible">{globalState.account}</div> */}
         </div>
