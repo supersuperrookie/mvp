@@ -1,25 +1,33 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { useGlobal } from "../utils/global-state";
 import { formatDid } from "../utils/formatDid";
-import { webClient, getRecord, getAccount } from "../utils/withIdentity";
+import { webClient, getRecord } from "../utils/withIdentity";
 import { useRouter } from "next/router";
+import { loadImage } from "@self.id/image-utils";
 
 import Link from "next/link";
 import withLit from "../utils/withLit";
-
-
+import { appendIpfsRoot, stripIpfsUriPrefix } from "../utils/ipfsUtils";
 
 const Profile = () => {
-  const [globalState, globalActions] = useGlobal();
-  if (typeof globalState.did !== 'undefined' && typeof window !== 'undefined')
+  const [globalState, _] = useGlobal();
+  if (typeof globalState.did !== "undefined" && typeof window !== "undefined")
     return (
       <div className="p-6 rounded-xl flex items-center space-x-4">
         <div className="shrink-0">
-          <img className="h-12 w-12 rounded-full" src={globalState.did === "did:3:kjzl6cwe1jw148zszusjm9y46l55wwhhmdhsxloepwsycgoyewmxsxqlqpegwh2"  ? "/profileseller.png" : "/profile.png"} alt="" />
+          {async () => await loadImage(globalState.imageBlob)}
+          <img
+            className="h-12 w-12 rounded-full"
+            src={globalState.imageURL}
+            alt=""
+          />
         </div>
         <div>
-          <div className="text-xl font-medium text-black">{globalState.did === "did:3:kjzl6cwe1jw148zszusjm9y46l55wwhhmdhsxloepwsycgoyewmxsxqlqpegwh2" ? "Bufficorn Seller" : "Bufficorn Buyer"}</div>
+          <div className="text-xl font-medium text-black">
+            {globalState.name}
+          </div>
           <div className="text-slate-500">{formatDid(globalState.did)}</div>
-          {/* <div className="text-slate-500 sm:invisible">{globalState.account}</div> */}
         </div>
       </div>
     );
@@ -32,15 +40,29 @@ const NoProfile = () => {
 
   async function connectCeramic() {
     const cdata = await webClient();
+    const rdata = await getRecord();
+
+    const { profile, did } = rdata;
+    const { name, image } = profile;
     const { account, client, id, selfId, error } = cdata;
+
+    const cid = stripIpfsUriPrefix(image.original.src);
+    const cidURI = appendIpfsRoot(cid);
+    const imageBlob = await axios.get(cidURI, { responseType: "blob" });
+    console.log(imageBlob)
+
+    const imageURL = URL.createObjectURL(imageBlob.data);
 
     if (id && account) {
       globalActions.setAccount(account);
-      globalActions.setDID(id);
-      router.push('/shop');
-      const pdata = await getRecord({...client});
+      // globalActions.setImageURL(imageURL);
+      globalActions.setName(name);
+      globalActions.setDID(did);
+
+      const currentPath = router.pathname;
+
+      router.push(currentPath);
     }
-    
   }
 
   return (

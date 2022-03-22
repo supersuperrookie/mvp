@@ -1,22 +1,16 @@
 import { useEffect } from "react";
 import { useGlobal } from "../utils/global-state";
 import { useState } from "react";
-import { Status } from "../utils/constants";
 import { ethers } from "ethers";
 import axios from "axios";
 import { AntiLayoutMargin, LayoutMargin } from "../components/Layout";
 import withLit from "../utils/withLit";
-import IconShipped from "../components/Icons/IconShipped";
 import IconTethered from "../components/Icons/IconTethered";
 import IconPending from "../components/Icons/IconPending";
 
 import { nftAddress, escrowAddress } from "../config";
 import Amho from "../artifacts/contracts/Amho.sol/Amho.json";
 import IconUntethered from "../components/Icons/IconUntethered";
-
-import dynamic from "next/dynamic";
-
-const QrReader = dynamic(() => import("react-qr-reader"));
 
 /**
  *
@@ -25,7 +19,6 @@ const QrReader = dynamic(() => import("react-qr-reader"));
  *
  */
 const Collections = ({ litCeramicIntegration }) => {
-  const [globalState, globalActions] = useGlobal();
   const [loggedInAddress, setLoggedInAddress] = useState("");
   const [loading, setLoading] = useState(true);
   const [owned, setOwned] = useState([]);
@@ -37,13 +30,7 @@ const Collections = ({ litCeramicIntegration }) => {
   const [_tokenId, setTokenId] = useState(0);
   const [streamData, setStreamData] = useState(null);
   const [decryptedSecret, setDecryptedSecret] = useState(null);
-  // TODO: Reach out to grab the array based on the user address to get the collections
-  const handleScan = (result, type) => {
-    if (result) {
-      setStreamData(result);
-      decryptSecret(result);
-    }
-  };
+
   if (typeof window !== "undefined") {
     useEffect(async () => {
       // NOTE: Returns owned array
@@ -255,11 +242,10 @@ const Collections = ({ litCeramicIntegration }) => {
       <div className="flex flex-row flex-wrap justify-start items-stretch gap-60">
         {owned.map(
           (item, id) =>
-            (item.status == 0 || item.status == 3) && <CollectionItem item={item} id={id} />
+            (item.status == 0 || item.status == 3) && (
+              <CollectionItem item={item} id={id} />
+            )
         )}
-        {/* {globalState.ownedDummyData.map((item, id) => (
-          <CollectionItem item={item} id={id} />
-        ))} */}
       </div>
       <div className="pt-10 pb-10 mt-60">
         {/* NOTE: ORDERS */}
@@ -275,32 +261,12 @@ const Collections = ({ litCeramicIntegration }) => {
           (item, id) =>
             item.status == 2 && <CollectionItem item={item} id={id} />
         )}
-        {/* {globalState.ordersDummyData.map((item, id) => (
-          <CollectionItem item={item} id={id} />
-        ))} */}
       </div>
       <TetherDialog
         open={open}
         handleOpen={handleOpen}
         itemImage={"./bag1.mp4"}
       />
-      {/* <div className={!qrOpen ? `invisible` : `visible`}> */}
-      {/* <QrReader
-          onScan={(result) => handleScan(result)}
-          scanDelay={1000}
-          onResult={(result, error) => {
-            if (!!result) {
-              // setData(result?.text);
-              console.log(result);
-            }
-
-            if (!!error) {
-              console.info(error);
-            }
-          }}
-          style={{ width: 400 }}
-        /> */}
-      {/* </div> */}
     </div>
   );
 };
