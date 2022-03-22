@@ -1,6 +1,7 @@
 import { Core } from '@self.id/core'
 const SID = require('@self.id/web')
 const { EthereumAuthProvider, SelfID, WebClient } = SID
+import { selectImageSource } from '@self.id/image-utils'
 
 // TODO: Set global hook to set the DID here
 
@@ -55,10 +56,7 @@ const caip10Links = {
   mumbai: "@eip155:80001",
   fuji: "@eip155:43113",
 }
-/*
-CAIP-10 Account IDs is a blockchain agnostic way to describe an account on any blockchain. This may be an externally owned key-pair account, or a smart contract account. Ceramic uses CAIP-10s as a way to lookup the DID of a user using a caip10-link streamType in Ceramic. Learn more in the Ceramic documentation.
-TODO: If time then add fuji functionality
-*/
+
 async function getRecord({
   ceramicNetwork = 'testnet-clay',
   network = 'mumbai',
@@ -67,7 +65,7 @@ async function getRecord({
   address = null
 } = {}) {
   let ethereum = window.ethereum;
-  let record;
+  let profile;
 
   if (!ethereum) return {
     error: "No ethereum wallet detected"
@@ -83,9 +81,14 @@ async function getRecord({
   const capLink = caip10Links[network]
   const did = await client.getAccountDID(`${address}${capLink}`)
   
-  record = await client.get(schema, did)
+  profile = await client.get(schema, did)
+
+  const image = profile.image ? selectImageSource(profile.image, { width: 60, height: 60 }) : null
+
+  let profileImage = selectImageSource(image);
+
   return {
-    record, error: null
+    profile, did, image: profileImage, error: null
   }
 }
 
