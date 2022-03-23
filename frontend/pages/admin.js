@@ -5,19 +5,11 @@ import { useQRCode } from "next-qrcode";
 import Amho from "../artifacts/contracts/Amho.sol/Amho.json";
 import VRF from "../artifacts/contracts/VRFConsumer.sol/VRFConsumer.json";
 import withLit from "../utils/withLit";
-import Router from "next/router";
 
 import { linkTokenAddress } from "../config";
 
 const LinkArtifact = require("../artifacts/@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol/LinkTokenInterface.json");
 const LinkTokenABI = LinkArtifact.abi;
-
-import QRCode from "qrcode";
-// import { webClient, getRecord } from "../utils/withIdentity";
-
-// NOTE: Pseudo secret for now
-
-import { randomBytes } from "crypto";
 
 import { create } from "ipfs-http-client";
 import { ethers } from "ethers";
@@ -37,33 +29,6 @@ const preloadMintData = {
   price: 1,
   secretStream: "",
 };
-
-// const didNFT = createNftDidUrl({
-//   chainId: "eip155:80001",
-//   namespace: "erc721",
-//   contract: "0x454314f720bbb4508a29b9eae7d8f75838867da7",
-//   tokenId: "1",
-// });
-
-// const run = async (ceramic) => {
-//   const config = {
-//     ceramic,
-//     chains: {
-//       "eip155:80001": {
-//         blocks: "https://api.thegraph.com/subgraphs/name/nnons/mumbai-blocks",
-//         skew: 50000,
-//         assets: {
-//           erc721: "https://api.thegraph.com/subgraphs/name/nnons/mumbaierc721",
-//           erc1155: "https://api.thegraph.com/subgraphs/name/nnons/mumbaierc721",
-//         },
-//       },
-//     },
-//   };
-//   const nftResolver = getResolver(config);
-//   const didResolver = new Resolver(nftResolver);
-
-//   const erc721result = await didResolver.resolve(didNFT);
-// };
 
 const Admin = ({ litCeramicIntegration }) => {
   const [ceramic, setCeramic] = useState(null);
@@ -106,35 +71,21 @@ const Admin = ({ litCeramicIntegration }) => {
     await tx.wait();
     console.log("hash: ", tx.hash);
     let randomTransaction = await vrfConsumer.getRandomNumber();
-    let tx_receipt = await randomTransaction.wait();
+    let tx_receipt = await randomTransaction.wait(1);
     const requestId = tx_receipt.events[2].topics[1];
 
     await new Promise((resolve) => setTimeout(resolve, 30000));
 
     let result = await vrfConsumer.randomResult();
-
     /**
-     * 
-     * 
+     *
+     *
      */
     const resultString = ethers.BigNumber.from(result._hex).toString();
     const hexString = ethers.BigNumber.from(result._hex).toHexString();
 
     return [resultString, hexString];
 
-    // await new Promise(resolve => setTimeout(resolve, 80000));
-    // const finalResult = await vrfConsumer.getRandomResult();
-    // await new Promise(resolve => setTimeout(resolve, 20000));
-    // const finalResult2 = await vrfConsumer.getRandomResult();
-    // console.log(finalResult);
-    // console.log(finalResult2);
-  };
-
-  const decryptSecret = async () => {
-    // INPUT ceramicStream
-    await litCeramicIntegration.readAndDecrypt(finalSecretStream).then((decryptedText) => {
-      alert(decryptedText);
-    });
   };
 
   const encryptSecret = async (secretValue) => {
@@ -201,16 +152,9 @@ const Admin = ({ litCeramicIntegration }) => {
 
     let amhoContract = new ethers.Contract(nftAddress, Amho.abi, signer);
 
-
-    // let secret = new Uint8Array(randomBytes(32));
-    /**
-    const resultString = ethers.BigNumber.from(result._hex).toString();
-    const hexString = ethers.BigNumber.from(result._hex).toHexString();
-     * 
-     */
     let [secret, hexSecret] = await getVRF();
-    console.log("Secret: ", secret)
-    console.log("hexSecret: ", hexSecret)
+    console.log("Secret: ", secret);
+    console.log("hexSecret: ", hexSecret);
 
     await encryptSecret(secret);
 
@@ -221,7 +165,6 @@ const Admin = ({ litCeramicIntegration }) => {
 
     let tx = await amhoContract.mintToken(hashedSecret, metadataURI, price);
     await tx.wait();
-    // Router.push("/collections");
   };
 
   return (
@@ -233,7 +176,7 @@ const Admin = ({ litCeramicIntegration }) => {
 
         <div className="pt-5">
           {imageFileUrl && (
-            <video src={imageFileUrl} height={800} width={400} autoPlay />
+            <video src={imageFileUrl} height={800} width={400} autoPlay loop />
           )}
           <input type="file" name="Asset" onChange={imageUpload} />
         </div>
@@ -245,31 +188,25 @@ const Admin = ({ litCeramicIntegration }) => {
           >
             MINT
           </button>
-          <button
-            onClick={() => decryptSecret(finalSecretStream)}
-            class="w-full focus:ring-4 ring-slate-800 ring-2 dark:text-gray-800 dark:bg-slate-50 sm:w-auto mt-14 text-base leading-4 text-center text-white py-6 px-16 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 bg-gray-800"
-          >
-            TEST
-          </button>
         </div>
         <div>
           {finalSecretStream && (
             <div className="mt-10">
-            <Image
-              text={finalSecretStream}
-              options={{
-                type: "image/jpeg",
-                quality: 0.9,
-                level: "M",
-                margin: 3,
-                scale: 4,
-                width: 200,
-                color: {
-                  dark: "#000000FF",
-                  light: "#FFFFFFFF",
-                },
-              }}
-            />
+              <Image
+                text={finalSecretStream}
+                options={{
+                  type: "image/jpeg",
+                  quality: 0.9,
+                  level: "M",
+                  margin: 3,
+                  scale: 4,
+                  width: 200,
+                  color: {
+                    dark: "#000000FF",
+                    light: "#FFFFFFFF",
+                  },
+                }}
+              />
             </div>
           )}
         </div>
