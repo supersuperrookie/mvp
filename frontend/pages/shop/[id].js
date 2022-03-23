@@ -3,7 +3,6 @@ import { useState, useEffect} from "react";
 import { nftAddress, escrowAddress, maticAddress } from "../../config";
 import { LayoutMargin } from "../../components/Layout";
 import { ethers } from "ethers";
-import { randomBytes } from "crypto";
 import axios from "axios";
 
 import Escrow from "../../artifacts/contracts/Escrow.sol/Escrow.json";
@@ -63,15 +62,7 @@ function ShopItem() {
   }
 
   const handleBuy = async () => {
-    /**
-     await dummyToken.connect(buyerAddress).approve(escrowAddress, cost);
-     await nft.connect(buyerAddress).depositTokenToEscrow(mintedTokenId, cost);
 
-     1. Convert price to BigNumber
-     2. Approve escrow to spend funds
-     3. amhoCOntract.depositTokenToEscrow()
-
-     */
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     const signer = provider.getSigner();
 
@@ -137,66 +128,8 @@ function ShopItem() {
           </div>
         </div>
       </div>
-      <PurchaseDialog
-        open={open}
-        handleOpen={handleOpen}
-        itemImage={"/bag1.mp4"}
-      />
     </>
   );
 }
-function PurchaseDialog({ open, handleOpen, itemImage }) {
-  // TODO: Add on effect here that grabs the ID
-  const [success, setSuccess] = useState(false);
 
-  return open ? (
-    <div class="w-screen h-screen bg-slate-50 bg-opacity-80 top-0 fixed sticky-0">
-      <div class="2xl:container 2xl:mx-auto py-72 px-4 md:px-28 flex justify-center items-center">
-        <div class="ring-2 ring-slate-800 w-96 md:w-auto dark:bg-slate-50 relative flex flex-col justify-center items-center bg-white py-16 px-4 md:px-24 xl:py-24 xl:px-36">
-          <div className="">
-            <video
-              src="/bag1.mp4"
-              autoPlay
-              loop
-              muted
-              height={600}
-              width={350}
-              type="video/mp4"
-            ></video>
-          </div>
-          <div class="mt-10">
-            {success ? (
-              <h1
-                role="main"
-                class="text-3xl text-black lg:text-4xl font-semibold leading-7 lg:leading-9 text-center text-gray-800"
-              >
-                PURCHASE IN PROGRESS
-              </h1>
-            ) : (
-              <h1
-                role="main"
-                class="text-3xl text-black lg:text-4xl font-semibold leading-7 lg:leading-9 text-center text-gray-800"
-              >
-                SUCCESS
-              </h1>
-            )}
-            <div className="flex justify-center">
-              <button className="mt-6 text-base dark:text-slate-300 hover:text-blue-400 leading-7 text-gray-800">
-                txid: 0xdb1
-              </button>
-            </div>
-          </div>
-          <button
-            onClick={handleOpen}
-            class="w-full focus:ring-4 ring-slate-800 ring-2 dark:text-gray-800 dark:bg-slate-50 sm:w-auto mt-14 text-base leading-4 text-center text-white py-6 px-16 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 bg-gray-800"
-          >
-            CLOSE
-          </button>
-        </div>
-      </div>
-    </div>
-  ) : (
-    ""
-  );
-}
 export default ShopItem;
