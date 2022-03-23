@@ -8,22 +8,7 @@ import { nftAddress, escrowAddress } from "../config";
 import Amho from "../artifacts/contracts/Amho.sol/Amho.json";
 import { ethers } from "ethers";
 
-// const dummyShopData = [
-//   {
-//     id: 0,
-//     name: "MUDANG",
-//     status: Status.SHIPPED,
-//     imageURI: "/bag1.mp4",
-//     description:
-//       "First leather bag created for ETHDenver 2022, built with pebble buffalo leather",
-//     dimension: "9.5 / 4.5 / 7.5 inches",
-//     material: "Pebble Grain Leather",
-//     price: 1400,
-//   },
-// ];
-
 const Shop = () => {
-  // const [shopData, setShopData] = useState(dummyShopData);
   const [onSale, setOnSale] = useState([]);
 
   if (typeof window !== "undefined") {
@@ -86,8 +71,6 @@ const ShopItem = ({ item, id }) => {
         <a onClick={handlePageChange} key={id}>
           <video
             src={item.imageURI}
-            // autoPlay
-            // loop
             muted
             height={600}
             width={350}

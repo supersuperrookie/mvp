@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { useGlobal } from "../utils/global-state";
 import { formatDid } from "../utils/formatDid";
