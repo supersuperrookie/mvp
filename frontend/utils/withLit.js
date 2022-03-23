@@ -1,5 +1,4 @@
 import React from "react";
-import { useGlobal } from "./global-state";
 let litCeramicIntegration;
 import("lit-ceramic-sdk").then((mod) => {
   if (typeof window !== "undefined" || typeof document !== "undefined") {

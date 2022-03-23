@@ -12,7 +12,7 @@ import { appendIpfsRoot, stripIpfsUriPrefix } from "../utils/ipfsUtils";
 
 const Profile = () => {
   const [globalState, _] = useGlobal();
-  if (typeof globalState.did !== "undefined" && typeof window !== "undefined")
+  if (typeof globalState.did !== "undefined" && typeof window !== "undefined") {
     return (
       <div className="p-6 rounded-xl flex items-center space-x-4">
         <div className="shrink-0">
@@ -31,14 +31,13 @@ const Profile = () => {
         </div>
       </div>
     );
-  else return <NoProfile />;
+  } else return <NoProfile />;
 };
 
 const NoProfile = () => {
   const router = useRouter();
   const [globalState, globalActions] = useGlobal();
-
-  async function connectCeramic() {
+  const connectCeramic = async () => {
     const cdata = await webClient();
     const rdata = await getRecord();
 
@@ -49,13 +48,13 @@ const NoProfile = () => {
     const cid = stripIpfsUriPrefix(image.original.src);
     const cidURI = appendIpfsRoot(cid);
     const imageBlob = await axios.get(cidURI, { responseType: "blob" });
-    console.log(imageBlob)
+    console.log(imageBlob);
 
     const imageURL = URL.createObjectURL(imageBlob.data);
 
     if (id && account) {
       globalActions.setAccount(account);
-      // globalActions.setImageURL(imageURL);
+      globalActions.setImageURL(imageURL);
       globalActions.setName(name);
       globalActions.setDID(did);
 
@@ -63,7 +62,7 @@ const NoProfile = () => {
 
       router.push(currentPath);
     }
-  }
+  };
 
   return (
     <Link href="#">

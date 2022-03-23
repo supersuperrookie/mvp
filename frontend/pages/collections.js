@@ -141,11 +141,6 @@ const Collections = ({ litCeramicIntegration }) => {
       });
   };
 
-  // const handleQROpen = (tokenId) => {
-  //   setTokenId(tokenId);
-  //   setQrOpen(!qrOpen);
-  // };
-
   const handleQRTether = (tokenId, type) => {
     setTokenId(tokenId);
     let ethereum = window.ethereum;
