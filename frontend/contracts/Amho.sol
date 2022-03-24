@@ -38,8 +38,6 @@ contract Amho is ERC721URIStorage {
     mapping(uint256 => NFTState) idToNFTState;
 
     constructor(address payable _escrowContractAddress) ERC721("AMHO", "AMHO") {
-        // constructor() ERC721("AMHO", "AMHO") {
-        // owner = payable(msg.sender);
         escrowContractAddress = payable(_escrowContractAddress);
         escrowContract = Escrow(_escrowContractAddress);
     }
@@ -61,9 +59,10 @@ contract Amho is ERC721URIStorage {
         return orderState.secret;
     }
 
-    // TODO: Price match between the price of the minted token and msg.value
-
-    function depositTokenToEscrow(uint256 _tokenId, uint256 _amount) public {
+    function depositTokenToEscrow(uint256 _tokenId, uint256 _amount)
+        public
+        priceMatch(_tokenId, _amount)
+    {
         require(
             escrowContract.depositToken(msg.sender, _tokenId, _amount),
             "Tokens were not able to be deposited."
@@ -80,7 +79,10 @@ contract Amho is ERC721URIStorage {
             "NFT was not able to be deposited."
         );
 
-        require(msg.sender == idToNFTState[_tokenId].currentOwner, "Not the owner");
+        require(
+            msg.sender == idToNFTState[_tokenId].currentOwner,
+            "Not the owner"
+        );
         require(idToNFTState[_tokenId].secret == _secret, "Unauthorized");
 
         NFTState storage nftState = idToNFTState[_tokenId];
@@ -236,9 +238,9 @@ contract Amho is ERC721URIStorage {
 
         for (uint256 i = 0; i < totalCount; i++) {
             if (
-                (idToNFTState[i].itemState == ItemState.PENDING_TETHER &&
-                    (idToNFTState[i].nextOwner == msg.sender) ||
-                idToNFTState[i].nextOwner == address(0))
+                ((idToNFTState[i].itemState == ItemState.PENDING_TETHER &&
+                    (idToNFTState[i].nextOwner == msg.sender)) ||
+                    idToNFTState[i].nextOwner == address(0))
             ) {
                 pendingTetherCount++;
             }
@@ -258,6 +260,12 @@ contract Amho is ERC721URIStorage {
         }
 
         return inMemPendingItems;
+    }
+
+    modifier priceMatch(uint256 _tokenId, uint256 _amount) {
+        uint256 price = getPrice(_tokenId);
+        require(price == _amount, "Wrong value was sent");
+        _;
     }
 
     // NOTE: Functions for Lit Protocol

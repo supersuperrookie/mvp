@@ -74,14 +74,12 @@ contract Escrow is Ownable {
     {
         require(addressSet, "Addresses not set");
 
-        // address seller = Amho(amho).ownerOf(_tokenId);
         address seller = IERC721(amho).ownerOf(_tokenId);
         EscrowOrder storage order = escrowOrderById[_tokenId];
 
         order.seller = payable(from);
         order.status = EscrowOrderState.DEPOSITED_NFT;
 
-        // IERC721(amho).transferFrom(payable(from), order.buyer, _tokenId);
         IERC721(amho).transferFrom(payable(from), address(this), _tokenId);
 
         emit DepositedNFT(seller, address(amho));
