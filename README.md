@@ -10,8 +10,7 @@ https://user-images.githubusercontent.com/15680299/159645262-62cbc87d-02d2-4639-
 - Metamask Mobile
 
 # Architecture
-The architechture revolves entirely around the escrow functionality and how the QR code is used by the parties involved.
-![Architecture](https://user-images.githubusercontent.com/15680299/159846171-f16b3ea7-ea77-4f86-a0e0-465e7a7f98df.png)
+![Architecture](https://user-images.githubusercontent.com/15680299/159852027-a66fe4e2-5db4-4bd9-bca6-ad89eaac51c8.png)
 
 
 # The Future
